@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:task_j/widget/TaskItem.dart';
 
 class HomePage extends StatefulWidget{
   @override
@@ -20,7 +21,7 @@ class _HomePageState extends State<HomePage>{
 
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            TaskItemWidget()
+            TaskItem()
           ],
         ),
       ),
@@ -31,20 +32,4 @@ class _HomePageState extends State<HomePage>{
       ),
     );
   }
-}
-
-class TaskItemWidget extends StatefulWidget{
-  @override
-  State<StatefulWidget> createState() {
-    return _TaskItemWidgetState();
-  }
-
-}
-
-class _TaskItemWidgetState extends State<TaskItemWidget>{
-  @override
-  Widget build(BuildContext context) {
-    return null;
-  }
-
 }
