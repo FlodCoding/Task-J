@@ -18,7 +18,7 @@ class _TaskItemState extends State<TaskItem> {
         //TODO 任务详情
       },
       child: Container(
-        padding: EdgeInsets.only(left: 20, right: 20),
+        padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
         /* elevation: 5,
         margin: EdgeInsets.only(left: 10, right: 10, top: 8),*/
         child: Row(
@@ -29,11 +29,6 @@ class _TaskItemState extends State<TaskItem> {
               height: 25,
               color: Colors.blue,
             ),
-            /*   Icon(
-              Icons.person,
-
-              size: 50,
-            ),*/
             Expanded(
                 flex: 1,
                 child: Column(
@@ -42,11 +37,12 @@ class _TaskItemState extends State<TaskItem> {
                     Text(
                       "任务名称",
                       overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.black87, fontSize: 18),
                     ),
                     Text(
-                      "触发条件",
+                      "任务内容",
+                      style: TextStyle(color: Colors.black54, fontSize: 12),
                       overflow: TextOverflow.ellipsis,
-
                     ),
                   ],
                 )),
