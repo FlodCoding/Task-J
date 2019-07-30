@@ -16,7 +16,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         title: Text(""),
+        actionsIconTheme: IconThemeData(color: Colors.black),
         actions: <Widget>[
           PopupMenuButton(onSelected: (int) {
             switch (int) {

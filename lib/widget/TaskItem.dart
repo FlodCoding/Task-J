@@ -16,6 +16,7 @@ class _TaskItemState extends State<TaskItem> {
     return GestureDetector(
       onTap: () => {
         //TODO 任务详情
+        Navigator.pushNamed(context, "/TaskDetailPage")
       },
       child: Container(
         padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
@@ -37,7 +38,10 @@ class _TaskItemState extends State<TaskItem> {
                     Text(
                       "任务名称",
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.black87, fontSize: 18),
+                      style: TextStyle(
+                        color: Colors.black87,
+                        fontSize: 18,
+                      ),
                     ),
                     Text(
                       "任务内容",
