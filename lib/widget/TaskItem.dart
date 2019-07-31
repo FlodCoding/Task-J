@@ -20,8 +20,6 @@ class _TaskItemState extends State<TaskItem> {
       },
       child: Container(
         padding: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
-        /* elevation: 5,
-        margin: EdgeInsets.only(left: 10, right: 10, top: 8),*/
         child: Row(
           children: <Widget>[
             Container(
@@ -31,7 +29,6 @@ class _TaskItemState extends State<TaskItem> {
               color: Colors.blue,
             ),
             Expanded(
-                flex: 1,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
