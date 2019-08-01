@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:task_j/page/HomePage.dart';
 
+import 'page/HomePage.dart';
 import 'page/TaskDetail.dart';
+import 'page/condition/TimePickerPage.dart';
 
 void main() => runApp(MyApp());
 
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       home: HomePage(),
       routes: {
         "/TaskDetailPage": (context) => TaskDetailPage(),
+        "/TimePickerPage": (context) => TimePickerPage(),
       },
     );
   }

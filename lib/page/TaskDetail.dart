@@ -161,10 +161,11 @@ class TaskDetailPageState extends State<TaskDetailPage> {
             )).then((value) {
       if (value == 1) {
         //时间选择的弹窗
-         showTimePicker(
+        /*showTimePicker(
           context: context,
           initialTime: TimeOfDay.now(),
-        );
+        );*/
+        Navigator.pushNamed(context, "/TimePickerPage");
       }
     });
   }
