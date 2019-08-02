@@ -7,6 +7,9 @@ class TaskDetailPage extends StatefulWidget {
 }
 
 class TaskDetailPageState extends State<TaskDetailPage> {
+  bool conditionSet = false;
+  bool taskSet = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

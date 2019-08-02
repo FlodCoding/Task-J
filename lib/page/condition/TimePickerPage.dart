@@ -300,7 +300,7 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                   Expanded(
                     flex: 4,
                     child: Text(
-                      "选择日期",
+                      "日期",
                       style: TextStyle(
                         fontSize: 20,
                       ),
