@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         title: Text(""),
+        brightness: Brightness.light,
         actionsIconTheme: IconThemeData(color: Colors.black),
         actions: <Widget>[
           PopupMenuButton(onSelected: (int) {
@@ -58,7 +59,6 @@ class _HomePageState extends State<HomePage> {
           })
         ],
       ),
-
       body: ListView.separated(
           itemBuilder: (context, index) {
             return TaskItem();

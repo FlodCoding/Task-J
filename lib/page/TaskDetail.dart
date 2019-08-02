@@ -10,48 +10,39 @@ class TaskDetailPageState extends State<TaskDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(""),
-        centerTitle: true,
-        elevation: 0,
-        actionsIconTheme: IconThemeData(color: Colors.black),
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-            color: Colors.black,
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.pop(context);
-            }),
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(Icons.check),
-              onPressed: () {
-                Navigator.pop(context);
-              })
-        ],
-      ),
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(100),
+          child: Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: AppBar(
+              brightness: Brightness.light,
+              title: TextField(
+                maxLines: 1,
+                autofocus: false,
+                style: TextStyle(fontSize: 25),
+                decoration: InputDecoration(hintText: "输入一个任务名", border: InputBorder.none),
+              ),
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              leading: Padding(
+                padding: EdgeInsets.only(top: 0),
+                child: IconButton(
+                    color: Colors.black,
+                    icon: Icon(
+                      Icons.arrow_back,
+                      size: 30,
+                    ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    }),
+              ),
+            ),
+          )),
       body: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Padding(
-              padding: EdgeInsets.only(left: 17, right: 17),
-              child: TextField(
-                maxLines: 1,
-                autofocus: false,
-                style: TextStyle(fontSize: 30),
-                decoration: InputDecoration(
-                    icon: Icon(
-                      Icons.assignment,
-                      color: Colors.black54,
-                      size: 30,
-                    ),
-                    hintText: "输入一个任务名",
-                    border: InputBorder.none),
-              ),
-            ),
-
             //标题"触发条件"
             Padding(
                 padding: EdgeInsets.only(bottom: 10, top: 50),
