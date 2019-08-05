@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:task_j/model/bean/TaskItemBean.dart';
 
 class TaskDetailPage extends StatefulWidget {
   @override
@@ -9,6 +10,16 @@ class TaskDetailPage extends StatefulWidget {
 class TaskDetailPageState extends State<TaskDetailPage> {
   bool conditionSet = false;
   bool taskSet = false;
+
+  String _conditionStr;
+  String _taskStr;
+
+  @override
+  void initState() {
+    _conditionStr = "添加触发时间";
+    _taskStr = "添加任务";
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,14 +78,20 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                   children: <Widget>[
                     Expanded(
                         child: Text(
-                      "添加一个触发条件",
+                      _conditionStr,
                       style: TextStyle(fontSize: 15),
                     )),
                     FloatingActionButton(
                       elevation: 0,
-                      onPressed: () {
-                        //TODO 条件选择弹窗
-                        showConditionDialog(context);
+                      onPressed: () async {
+                        dynamic  result = await Navigator.pushNamed(context, "/TimePickerPage");
+                        if (result != null && result is TimeBean) {
+                          setState(() {
+                            _conditionStr = result.toString();
+                          });
+                        }
+                        // showConditionDialog(context);
+
                       },
                       heroTag: "fab1",
                       backgroundColor: Color.fromARGB(0xFF, 53, 186, 243),
@@ -105,7 +122,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                   children: <Widget>[
                     Expanded(
                         child: Text(
-                      "给我一个任务吧",
+                      _taskStr,
                       style: TextStyle(fontSize: 15),
                     )),
                     FloatingActionButton(
@@ -152,14 +169,14 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                   ),
                 ),
               ],
-            )).then((value) {
+            )).then((value) async {
       if (value == 1) {
         //时间选择的弹窗
         /*showTimePicker(
           context: context,
           initialTime: TimeOfDay.now(),
         );*/
-        Navigator.pushNamed(context, "/TimePickerPage");
+        Future va = await Navigator.pushNamed(context, "/TimePickerPage");
       }
     });
   }

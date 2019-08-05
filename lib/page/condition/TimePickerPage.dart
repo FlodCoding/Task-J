@@ -1,6 +1,6 @@
-import 'package:date_format/date_format.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:task_j/model/bean/TaskItemBean.dart';
 import 'package:task_j/style/CommonStyle.dart';
 
 class TimePickerPage extends StatefulWidget {
@@ -11,97 +11,104 @@ class TimePickerPage extends StatefulWidget {
 }
 
 class TimePickerPageState extends State<TimePickerPage> with SingleTickerProviderStateMixin {
-  var mTimeOfDay = TimeOfDay.now();
-
   //Repeat Option
-  static const STRING_NO_REPEAT = "只执行一次";
-  bool isRepeatOptionExpanded = false;
-  Animation optionIconAnim;
-  AnimationController optionIconAnimController;
-  List<bool> weekSelectedList = List(7);
-  String weekSelectedText = STRING_NO_REPEAT;
+
+  static const _Str_NO_REPEAT = "只执行一次";
+  static const _Str_Tomorrow = "明天";
+  static const _Str_Today = "今天";
+  Animation _optionIconAnim;
+  AnimationController _optionIconAnimController;
+  List<bool> _repeatInWeekList = List(7);
+  String _weekSelectedText = _Str_NO_REPEAT;
 
   //Select Date
-  DateTime mDateTime;
-  String mDaySelectedText;
+  TimeOfDay _timeOfDay;
+  DateTime _dateTime;
+  DateTime _dateTimeNow;
+  String _daySelectedText;
 
   @override
   void initState() {
     //init Animation
     super.initState();
-    optionIconAnimController = new AnimationController(vsync: this, duration: Duration(milliseconds: 200));
-    optionIconAnim = new Tween(begin: 0.0, end: 0.125).animate(optionIconAnimController);
+    _optionIconAnimController = new AnimationController(vsync: this, duration: Duration(milliseconds: 200));
+    _optionIconAnim = new Tween(begin: 0.0, end: 0.125).animate(_optionIconAnimController);
 
     //init weekSelectedList
-    print(weekSelectedList.length);
-    weekSelectedList.fillRange(0, weekSelectedList.length, false);
-    weekSelectedText = STRING_NO_REPEAT;
+    _repeatInWeekList.fillRange(0, _repeatInWeekList.length, false);
+    _weekSelectedText = _Str_NO_REPEAT;
 
     //init SelectDate
-    mDaySelectedText = "今天";
+    _daySelectedText = _Str_Tomorrow;
+    _dateTimeNow = DateTime.now();
+    _dateTime = _dateTimeNow.add(Duration(days: 1));
+    _timeOfDay = TimeOfDay.fromDateTime(_dateTime);
   }
 
   @override
   void dispose() {
-    optionIconAnimController.dispose();
+    _optionIconAnimController.dispose();
     super.dispose();
   }
 
   _onTimeSelected(TimeOfDay value) {
-    if (mDateTime == null) {
-      var nowTime = TimeOfDay.now();
-      if (value.hour > nowTime.hour) {
-        mDaySelectedText = "今天";
-        mDateTime = DateTime.now();
+    if (_weekSelectedText == _Str_NO_REPEAT) {
+      //不重复
+      if (_totalMinute(value) > _totalMinute(TimeOfDay.now())) {
+        //选择时间 > 当前时间：今天
+        _daySelectedText = _Str_Today;
+        _dateTime = _dateTimeNow;
       } else {
-        mDaySelectedText = "明天";
-        mDateTime = DateTime.now().add(Duration(days: 1));
+        //选择时间 < 当前时间：明天
+        _daySelectedText = _Str_Tomorrow;
+        _dateTime = _dateTimeNow.add(Duration(days: 1));
       }
     }
     setState(() {
-      mTimeOfDay = value;
+      _timeOfDay = value;
     });
   }
 
+  int _totalMinute(TimeOfDay timeOfDay) {
+    return timeOfDay.hour * 60 + timeOfDay.minute;
+  }
+
   _onRepeatOpExpand(bool expand) {
-    isRepeatOptionExpanded = expand;
     setState(() {
       if (expand) {
-        optionIconAnimController.forward();
+        _optionIconAnimController.forward();
       } else {
-        optionIconAnimController.reverse();
+        _optionIconAnimController.reverse();
       }
     });
   }
 
   _onWeekSelected(int index, bool b) {
-    setState(() {
-      weekSelectedList[index] = b;
-      weekSelectedText =
-          "${weekSelectedList[0] ? '周一 ' : ''}${weekSelectedList[1] ? '周二 ' : ''}${weekSelectedList[2] ? '周三 ' : ''}"
-          "${weekSelectedList[3] ? '周四 ' : ''}${weekSelectedList[4] ? '周五 ' : ''}"
-          "${weekSelectedList[5] ? '周六 ' : ''}${weekSelectedList[6] ? "周日 " : ''}";
+    _repeatInWeekList[index] = b;
+    _weekSelectedText = TimeBean.repeatInWeekStr(_repeatInWeekList);
 
-      if (weekSelectedText.isEmpty) {
-        weekSelectedText = STRING_NO_REPEAT;
-      } else if (weekSelectedText.length > 15) {
-        // weekSelectedText.startsWith(pattern)
-        weekSelectedText =
-            weekSelectedText.substring(0, 15) + "\n" + weekSelectedText.substring(15, weekSelectedText.length);
-      }
-    });
+    if (_weekSelectedText.isEmpty) {
+      _weekSelectedText = _Str_NO_REPEAT;
+      _onTimeSelected(_timeOfDay);
+      //_onTimeSelected 里面会刷新，所以返回
+      return;
+    } else if (_weekSelectedText.length > 15) {
+      _weekSelectedText =
+          _weekSelectedText.substring(0, 15) + "\n" + _weekSelectedText.substring(15, _weekSelectedText.length);
+    }
+    setState(() {});
   }
 
   _onDateSelected(DateTime dateTime) {
     setState(() {
-      mDateTime = dateTime;
-      DateTime now = DateTime.now();
-      if (dateTime.day == now.day) {
-        mDaySelectedText = "今天";
-      } else if (dateTime.day == now.day + 1) {
-        mDaySelectedText = "明天";
+      _dateTime = dateTime;
+      DateTime now = _dateTimeNow;
+      if (dateTime.day == now.day + 1) {
+        _daySelectedText = _Str_Tomorrow;
+      } else if (dateTime.day == now.day) {
+        _daySelectedText = _Str_Today;
       } else {
-        mDaySelectedText = formatDate(dateTime, [yyyy, '-', mm, '-', dd]);
+        _daySelectedText = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
       }
     });
   }
@@ -143,7 +150,7 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
           Center(
               child: FlatButton(
                   onPressed: () {
-                    showTimePicker(context: context, initialTime: mTimeOfDay).then((timeOfDay) {
+                    showTimePicker(context: context, initialTime: _timeOfDay).then((timeOfDay) {
                       if (timeOfDay != null) {
                         _onTimeSelected(timeOfDay);
                       }
@@ -156,13 +163,13 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
                       Text(
-                        '${mTimeOfDay.hour == 12 || mTimeOfDay.hour == 0 ? 12 : mTimeOfDay.hourOfPeriod}:${mTimeOfDay.minute}',
+                        '${_timeOfDay.hour == 12 || _timeOfDay.hour == 0 ? 12 : _timeOfDay.hourOfPeriod}:${_timeOfDay.minute}',
                         style: TextStyle(fontSize: 80, letterSpacing: 4, color: Colors.black),
                       ),
                       Padding(
                         padding: EdgeInsets.only(bottom: 15, left: 5),
                         child: Text(
-                          mTimeOfDay.period == DayPeriod.am ? "AM" : "PM",
+                          _timeOfDay.period == DayPeriod.am ? "AM" : "PM",
                           style: TextStyle(fontSize: 30, color: Colors.black),
                         ),
                       )
@@ -189,7 +196,7 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                 Expanded(
                   flex: 6,
                   child: Text(
-                    weekSelectedText,
+                    _weekSelectedText,
                     textDirection: TextDirection.rtl,
                     style: TextStyle(color: Colors.black, fontSize: 15),
                   ),
@@ -197,7 +204,7 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
               ],
             ),
             trailing: RotationTransition(
-                turns: optionIconAnim,
+                turns: _optionIconAnim,
                 child: Icon(
                   Icons.add,
                   size: 30,
@@ -217,9 +224,9 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                       selectedColor: CommonColors.lightBlue,
                       label: Text(
                         "周一",
-                        style: _changeChipTextStyle(weekSelectedList[0]),
+                        style: _changeChipTextStyle(_repeatInWeekList[0]),
                       ),
-                      selected: weekSelectedList[0],
+                      selected: _repeatInWeekList[0],
                       onSelected: (b) {
                         _onWeekSelected(0, b);
                       },
@@ -228,9 +235,9 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                         selectedColor: CommonColors.lightBlue,
                         label: Text(
                           "周二",
-                          style: _changeChipTextStyle(weekSelectedList[1]),
+                          style: _changeChipTextStyle(_repeatInWeekList[1]),
                         ),
-                        selected: weekSelectedList[1],
+                        selected: _repeatInWeekList[1],
                         onSelected: (b) {
                           _onWeekSelected(1, b);
                         }),
@@ -238,9 +245,9 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                         selectedColor: CommonColors.lightBlue,
                         label: Text(
                           "周三",
-                          style: _changeChipTextStyle(weekSelectedList[2]),
+                          style: _changeChipTextStyle(_repeatInWeekList[2]),
                         ),
-                        selected: weekSelectedList[2],
+                        selected: _repeatInWeekList[2],
                         onSelected: (b) {
                           _onWeekSelected(2, b);
                         }),
@@ -248,9 +255,9 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                         selectedColor: CommonColors.lightBlue,
                         label: Text(
                           "周四",
-                          style: _changeChipTextStyle(weekSelectedList[3]),
+                          style: _changeChipTextStyle(_repeatInWeekList[3]),
                         ),
-                        selected: weekSelectedList[3],
+                        selected: _repeatInWeekList[3],
                         onSelected: (b) {
                           _onWeekSelected(3, b);
                         }),
@@ -258,9 +265,9 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                         selectedColor: CommonColors.lightBlue,
                         label: Text(
                           "周五",
-                          style: _changeChipTextStyle(weekSelectedList[4]),
+                          style: _changeChipTextStyle(_repeatInWeekList[4]),
                         ),
-                        selected: weekSelectedList[4],
+                        selected: _repeatInWeekList[4],
                         onSelected: (b) {
                           _onWeekSelected(4, b);
                         }),
@@ -268,9 +275,9 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                         selectedColor: CommonColors.lightBlue,
                         label: Text(
                           "周六",
-                          style: _changeChipTextStyle(weekSelectedList[5]),
+                          style: _changeChipTextStyle(_repeatInWeekList[5]),
                         ),
-                        selected: weekSelectedList[5],
+                        selected: _repeatInWeekList[5],
                         onSelected: (b) {
                           _onWeekSelected(5, b);
                         }),
@@ -278,9 +285,9 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                         selectedColor: CommonColors.lightBlue,
                         label: Text(
                           "周日",
-                          style: _changeChipTextStyle(weekSelectedList[6]),
+                          style: _changeChipTextStyle(_repeatInWeekList[6]),
                         ),
-                        selected: weekSelectedList[6],
+                        selected: _repeatInWeekList[6],
                         onSelected: (b) {
                           _onWeekSelected(6, b);
                         }),
@@ -292,7 +299,7 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
 
           //选择日期
           Offstage(
-            offstage: weekSelectedText != STRING_NO_REPEAT ,
+            offstage: _weekSelectedText != _Str_NO_REPEAT,
             child: ListTile(
               title: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -309,7 +316,7 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                   Expanded(
                     flex: 6,
                     child: Text(
-                      mDaySelectedText,
+                      _daySelectedText,
                       textDirection: TextDirection.rtl,
                       style: TextStyle(color: Colors.black, fontSize: 15),
                     ),
@@ -335,14 +342,17 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
           ),
         ],
       ),
-      floatingActionButton:  Padding(
-              padding: EdgeInsets.only(bottom: 50),
-              child: FloatingActionButton(
-                onPressed: () {},
-                isExtended: false,
-                child: Icon(Icons.done),
-              ),
-            ),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(bottom: 50),
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.pop(
+                context, TimeBean(repeatInWeek: _repeatInWeekList, dateTime: _dateTime, timeOfDay: _timeOfDay));
+          },
+          isExtended: false,
+          child: Icon(Icons.done),
+        ),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
