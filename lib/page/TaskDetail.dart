@@ -87,7 +87,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                         dynamic  result = await Navigator.pushNamed(context, "/TimePickerPage");
                         if (result != null && result is TimeBean) {
                           setState(() {
-                            _conditionStr = result.toString();
+                            _conditionStr = result.format(context);
                           });
                         }
                         // showConditionDialog(context);

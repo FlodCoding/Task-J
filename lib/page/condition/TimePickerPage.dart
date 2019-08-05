@@ -10,7 +10,8 @@ class TimePickerPage extends StatefulWidget {
   }
 }
 
-class TimePickerPageState extends State<TimePickerPage> with SingleTickerProviderStateMixin {
+class TimePickerPageState extends State<TimePickerPage>
+    with SingleTickerProviderStateMixin {
   //Repeat Option
 
   static const _Str_NO_REPEAT = "只执行一次";
@@ -31,8 +32,10 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
   void initState() {
     //init Animation
     super.initState();
-    _optionIconAnimController = new AnimationController(vsync: this, duration: Duration(milliseconds: 200));
-    _optionIconAnim = new Tween(begin: 0.0, end: 0.125).animate(_optionIconAnimController);
+    _optionIconAnimController = new AnimationController(
+        vsync: this, duration: Duration(milliseconds: 200));
+    _optionIconAnim =
+        new Tween(begin: 0.0, end: 0.125).animate(_optionIconAnimController);
 
     //init weekSelectedList
     _repeatInWeekList.fillRange(0, _repeatInWeekList.length, false);
@@ -93,8 +96,9 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
       //_onTimeSelected 里面会刷新，所以返回
       return;
     } else if (_weekSelectedText.length > 15) {
-      _weekSelectedText =
-          _weekSelectedText.substring(0, 15) + "\n" + _weekSelectedText.substring(15, _weekSelectedText.length);
+      _weekSelectedText = _weekSelectedText.substring(0, 15) +
+          "\n" +
+          _weekSelectedText.substring(15, _weekSelectedText.length);
     }
     setState(() {});
   }
@@ -106,7 +110,12 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
       if (dateTime.day == now.day + 1) {
         _daySelectedText = _Str_Tomorrow;
       } else if (dateTime.day == now.day) {
-        _daySelectedText = _Str_Today;
+        if (_totalMinute(_timeOfDay) > _totalMinute(TimeOfDay.now())) {
+          _daySelectedText = _Str_Today;
+        } else {
+          _daySelectedText = _Str_Tomorrow;
+          _dateTime.add(Duration(days: 1));
+        }
       } else {
         _daySelectedText = "${dateTime.year}-${dateTime.month}-${dateTime.day}";
       }
@@ -150,7 +159,9 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
           Center(
               child: FlatButton(
                   onPressed: () {
-                    showTimePicker(context: context, initialTime: _timeOfDay).then((timeOfDay) {
+                    showTimePicker(context: context, initialTime: _timeOfDay)
+                        .then((timeOfDay) {
+                      print(timeOfDay.format(context));
                       if (timeOfDay != null) {
                         _onTimeSelected(timeOfDay);
                       }
@@ -163,13 +174,16 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
                       Text(
-                        '${_timeOfDay.hour == 12 || _timeOfDay.hour == 0 ? 12 : _timeOfDay.hourOfPeriod}:${_timeOfDay.minute}',
-                        style: TextStyle(fontSize: 80, letterSpacing: 4, color: Colors.black),
+                        _timeOfDay.format(context).substring(3),
+                        style: TextStyle(
+                            fontSize: 80,
+                            letterSpacing: 4,
+                            color: Colors.black),
                       ),
                       Padding(
-                        padding: EdgeInsets.only(bottom: 15, left: 5),
+                        padding: EdgeInsets.only(bottom: 20, left: 5),
                         child: Text(
-                          _timeOfDay.period == DayPeriod.am ? "AM" : "PM",
+                          _timeOfDay.format(context).substring(0, 3),
                           style: TextStyle(fontSize: 30, color: Colors.black),
                         ),
                       )
@@ -331,7 +345,11 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
                 DateTime dateNow = DateTime.now();
                 DateTime firstDate = dateNow.subtract(Duration(days: 1));
                 DateTime lastDate = DateTime(dateNow.year + 1);
-                showDatePicker(context: context, initialDate: dateNow, firstDate: firstDate, lastDate: lastDate)
+                showDatePicker(
+                        context: context,
+                        initialDate: dateNow,
+                        firstDate: firstDate,
+                        lastDate: lastDate)
                     .then((value) {
                   if (value != null) {
                     _onDateSelected(value);
@@ -347,7 +365,11 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
         child: FloatingActionButton(
           onPressed: () {
             Navigator.pop(
-                context, TimeBean(repeatInWeek: _repeatInWeekList, dateTime: _dateTime, timeOfDay: _timeOfDay));
+                context,
+                TimeBean(
+                    repeatInWeek: _repeatInWeekList,
+                    dateTime: _dateTime,
+                    timeOfDay: _timeOfDay));
           },
           isExtended: false,
           child: Icon(Icons.done),
