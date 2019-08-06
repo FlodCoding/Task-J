@@ -55,9 +55,9 @@ object AppListUtil {
         for (resolveInfo in resolveInfos) {
             val info = resolveInfo.activityInfo
             if (info != null) {
-                val iconDraw = resolveInfo.activityInfo.applicationInfo.loadIcon(packageManager)
+                //val iconDraw = resolveInfo.activityInfo.applicationInfo.loadIcon(packageManager)
                 val title = resolveInfo.activityInfo.applicationInfo.loadLabel(packageManager)
-                val appInfoBean = AppInfoBean(iconDraw, title, info)
+                val appInfoBean = AppInfoBean(null, title, info)
                 appInfoBeans.add(appInfoBean)
             }
 

@@ -11,7 +11,7 @@ import android.graphics.drawable.Drawable
  * Date: 2019-08-06
  * UseDes:
  */
-class AppInfoBean(val icon: Drawable, val appName: CharSequence, val info: ActivityInfo) {
+class AppInfoBean(val icon: Drawable?, val appName: CharSequence, val info: ActivityInfo) {
 
     internal val startIntent: Intent
         get() {

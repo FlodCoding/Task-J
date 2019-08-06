@@ -50,8 +50,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<Null> _getBatteryLevel() async {
     String batteryLevel;
     try {
-      final int result = await platform.invokeMethod('getBatteryLeve');
-      batteryLevel = 'Battery level at $result % .';
+      await platform.invokeMethod('showInstallAppList');
+      //batteryLevel = 'Battery level at $result % .';
     } on PlatformException catch (e) {
       batteryLevel = "Failed to get battery level: '${e.message}'.";
     }
