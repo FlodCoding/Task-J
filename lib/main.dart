@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.blue,
           scaffoldBackgroundColor: Colors.white,
           backgroundColor: Colors.white),
-      home: HomePage(),
+      home: MyHomePage(),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -37,5 +37,54 @@ class MyApp extends StatelessWidget {
         "/TimePickerPage": (context) => TimePickerPage(),
       },
     );
+  }
+}
+
+
+class _MyHomePageState extends State<MyHomePage> {
+  static const platform = const MethodChannel('samples.flutter.io/battery');
+
+// Get battery level.
+  String _batteryLevel = 'Unknown battery level.';
+
+  Future<Null> _getBatteryLevel() async {
+    String batteryLevel;
+    try {
+      final int result = await platform.invokeMethod('getBatteryLeve');
+      batteryLevel = 'Battery level at $result % .';
+    } on PlatformException catch (e) {
+      batteryLevel = "Failed to get battery level: '${e.message}'.";
+    }
+
+    setState(() {
+      _batteryLevel = batteryLevel;
+    });
+  }
+
+
+  @override
+  Widget build(BuildContext context) {
+    return new Material(
+      child: new Center(
+        child: new Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            new RaisedButton(
+              child: new Text('Get Battery Level'),
+              onPressed: _getBatteryLevel,
+            ),
+            new Text(_batteryLevel),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    // TODO: implement createState
+    return _MyHomePageState();
   }
 }
