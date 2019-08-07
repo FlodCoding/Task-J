@@ -2,12 +2,14 @@ package com.flodcoding.task_j.applist
 
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.Point
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.annotation.NonNull
 import androidx.appcompat.widget.AppCompatImageView
@@ -16,6 +18,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.flodcoding.task_j.R
+import kotlinx.coroutines.*
 
 /**
  * SimpleDes:
@@ -23,10 +26,13 @@ import com.flodcoding.task_j.R
  * Date: 2019-08-06
  * UseDes:
  */
-class AppListDialog : DialogFragment(){
+class AppListDialog constructor(private val onAppSelectedListener: OnAppSelectedListener) : DialogFragment(), CoroutineScope by MainScope() {
+    private lateinit var mAdapter: Adapter
+    //private lateinit var onAppSelectedListener:OnAppSelectedListener
+
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        setStyle(STYLE_NO_TITLE, 0)
+        setStyle(STYLE_NO_TITLE, R.style.Theme_AppCompat_Light_Dialog)
         return super.onCreateDialog(savedInstanceState)
     }
 
@@ -34,15 +40,13 @@ class AppListDialog : DialogFragment(){
         super.onStart()
         //设置大小只有在这里可以生效，具体原因还不清楚
         val wm = requireContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager
-            val display = wm.defaultDisplay
-            val point = Point()
-            display.getSize(point)
-            if (getDialog() != null) {
-                val window = getDialog().getWindow()
-                if (window != null) {
-                    window.setLayout((point.x * 0.9).toInt(), ViewGroup.LayoutParams.WRAP_CONTENT)
-                }
-            }
+        val display = wm.defaultDisplay
+        val point = Point()
+        display.getSize(point)
+        if (dialog != null) {
+            dialog.setCanceledOnTouchOutside(true)
+            dialog.window?.setLayout((point.x * 0.9).toInt(), (point.y * 0.9).toInt())
+        }
 
 
     }
@@ -51,9 +55,8 @@ class AppListDialog : DialogFragment(){
     fun show(@NonNull manager: FragmentManager) {
         val remain = manager.findFragmentByTag("AppListDialog")
         if (remain != null) return
-        val dialog = AppListDialog()
         try {
-            dialog.showNow(manager, "AppListDialog")
+            showNow(manager, "AppListDialog")
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -64,19 +67,37 @@ class AppListDialog : DialogFragment(){
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val root = inflater.inflate(R.layout.dialog_applist, container)
-        val recyclerView = root.findViewById(R.id.recyclerView) as RecyclerView
-        recyclerView.setLayoutManager(LinearLayoutManager(requireContext()))
+        val progressBar = root.findViewById<ProgressBar>(R.id.progress_circular)
+        val recyclerView = root.findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        val adapter = Adapter(AppListUtil.getSimpleInstalledAppInfoList(requireContext()))
 
-        recyclerView.adapter = adapter
+        mAdapter = Adapter()
+        recyclerView.adapter = mAdapter
+
+        GlobalScope.launch(Dispatchers.IO) {
+            val list = AppListUtil.getSimpleInstalledAppInfoList(requireContext())
+            withContext(Dispatchers.Main) {
+                mAdapter.setDate(list)
+                progressBar.visibility = View.GONE
+            }
+
+        }
+
         return root
     }
 
 
-    private inner class Adapter internal constructor(private val mInfoList: List<AppInfoBean>) : RecyclerView.Adapter<Adapter.Holder>() {
+    private inner class Adapter : RecyclerView.Adapter<Adapter.Holder>() {
+        var mInfoList: List<AppInfoBean> = ArrayList()
         override fun getItemCount(): Int {
-           return mInfoList.size
+            return mInfoList.size
+        }
+
+
+        fun setDate(list: List<AppInfoBean>) {
+            this.mInfoList = list;
+            notifyDataSetChanged()
         }
 
         @NonNull
@@ -87,16 +108,34 @@ class AppListDialog : DialogFragment(){
 
         override fun onBindViewHolder(@NonNull holder: Holder, i: Int) {
             val info = mInfoList[i]
-            //holder.imIcon.setImageDrawable(info.icon)
+            holder.imIcon.setImageDrawable(info.appIcon)
             holder.tvTitle.text = info.appName
-            holder.itemView.setOnClickListener { requireActivity().startActivity(info.startIntent) }
+            holder.itemView.setOnClickListener {
+                onAppSelectedListener.onSelected(info)
+                dismiss()
+            }
         }
 
         internal inner class Holder(@NonNull itemView: View) : RecyclerView.ViewHolder(itemView) {
-             val imIcon: AppCompatImageView = itemView.findViewById(R.id.imAppIcon)
+            val imIcon: AppCompatImageView = itemView.findViewById(R.id.imAppIcon)
             val tvTitle: TextView = itemView.findViewById(R.id.tvAppName)
 
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        cancel()
+    }
+
+    override fun onCancel(dialog: DialogInterface?) {
+        super.onCancel(dialog)
+        onAppSelectedListener.onSelected(null)
+    }
+
+
+    interface OnAppSelectedListener {
+        fun onSelected(appInfoBean: AppInfoBean?)
     }
 
 

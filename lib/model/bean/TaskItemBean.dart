@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class TaskItemBean {
   TimeBean _timeBean;
+  AppInfoBean _appInfoBean;
 }
 
 class TimeBean {
@@ -15,8 +16,7 @@ class TimeBean {
   TimeBean({List<bool> repeatInWeek, DateTime dateTime, TimeOfDay timeOfDay}) {
     this._repeatInWeek = repeatInWeek;
     if (timeOfDay != null) {
-      this._dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day,
-          timeOfDay.hour, timeOfDay.minute);
+      this._dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day, timeOfDay.hour, timeOfDay.minute);
     } else {
       this._dateTime = dateTime;
     }
@@ -35,15 +35,13 @@ class TimeBean {
     return "";
   }
 
-  static bool isEveryDay(List<bool> repeatInWeekList) =>
-      repeatInWeekList.every((element) => element);
+  static bool isEveryDay(List<bool> repeatInWeekList) => repeatInWeekList.every((element) => element);
 
   String format(BuildContext context) {
     bool isRepeat = _repeatInWeek.any((element) => element);
     String dateStr;
     if (isRepeat) {
-      dateStr =
-          "${isEveryDay(_repeatInWeek) ? "" : "每"}${repeatInWeekStr(_repeatInWeek)}";
+      dateStr = "${isEveryDay(_repeatInWeek) ? "" : "每"}${repeatInWeekStr(_repeatInWeek)}";
     } else {
       DateTime now = DateTime.now();
       if (_dateTime.day == now.day)
@@ -63,8 +61,7 @@ class TimeBean {
     bool isRepeat = _repeatInWeek.any((element) => element);
     String dateStr;
     if (isRepeat) {
-      dateStr =
-          "${isEveryDay(_repeatInWeek) ? "" : "每"}${repeatInWeekStr(_repeatInWeek)}";
+      dateStr = "${isEveryDay(_repeatInWeek) ? "" : "每"}${repeatInWeekStr(_repeatInWeek)}";
     } else {
       //TODO 有可能选完时间就过期
       DateTime now = DateTime.now();
@@ -88,4 +85,15 @@ class TimeBean {
   String format12Hour() {
     return "${_dateTime.hour == 0 ? 12 : (_dateTime.hour > 12 ? _dateTime.hour - 12 : _dateTime.hour)}:${_dateTime.minute}${_dateTime.hour > 11 ? "上午" : "下午"}";
   }
+}
+
+class AppInfoBean {
+  Icon _appIcon;
+  String _appName;
+
+  AppInfoBean(this._appIcon, this._appName);
+
+  String get appName => _appName;
+
+  Icon get appIcon => _appIcon;
 }

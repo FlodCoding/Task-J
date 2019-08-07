@@ -1,8 +1,11 @@
+import 'dart:convert' as convert;
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
-import 'page/HomePage.dart';
 import 'page/TaskDetail.dart';
 import 'page/condition/TimePickerPage.dart';
 
@@ -40,27 +43,23 @@ class MyApp extends StatelessWidget {
   }
 }
 
-
 class _MyHomePageState extends State<MyHomePage> {
-  static const platform = const MethodChannel('samples.flutter.io/battery');
+  static const platform = const MethodChannel('com.flod.task_j.android/applist');
+  Uint8List imageData = Uint8List(0);
 
 // Get battery level.
-  String _batteryLevel = 'Unknown battery level.';
+  String _string = 'Unknown battery level.';
 
   Future<Null> _getBatteryLevel() async {
-    String batteryLevel;
     try {
-      await platform.invokeMethod('showInstallAppList');
-      //batteryLevel = 'Battery level at $result % .';
-    } on PlatformException catch (e) {
-      batteryLevel = "Failed to get battery level: '${e.message}'.";
-    }
+      Map<dynamic, dynamic> result = await platform.invokeMethod('showInstallAppList');
 
-    setState(() {
-      _batteryLevel = batteryLevel;
-    });
+      _string = result["appName"];
+      imageData = Base64Decoder().convert(result["appIconBytes"]);
+    } on PlatformException catch (e) {}
+
+    setState(() {});
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +72,12 @@ class _MyHomePageState extends State<MyHomePage> {
               child: new Text('Get Battery Level'),
               onPressed: _getBatteryLevel,
             ),
-            new Text(_batteryLevel),
+            new Text(_string),
+            Image.memory(
+              imageData,
+              width: 200,
+              height: 200,
+            )
           ],
         ),
       ),
