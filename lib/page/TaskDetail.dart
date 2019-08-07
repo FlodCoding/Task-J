@@ -1,6 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:task_j/model/bean/TaskItemBean.dart';
+import 'package:task_j/plugins/CallNative.dart';
 
 class TaskDetailPage extends StatefulWidget {
   @override
@@ -8,16 +11,20 @@ class TaskDetailPage extends StatefulWidget {
 }
 
 class TaskDetailPageState extends State<TaskDetailPage> {
-  bool conditionSet = false;
-  bool taskSet = false;
+  bool _conditionSet = false;
+  bool _taskSet = false;
 
   String _conditionStr;
-  String _taskStr;
+
+  //String _taskStr;
+
+  Uint8List _appIconBytes = Uint8List(0);
+  String _appName;
 
   @override
   void initState() {
     _conditionStr = "添加触发时间";
-    _taskStr = "添加任务";
+    _appName = "选择应用";
     super.initState();
   }
 
@@ -34,7 +41,8 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                 maxLines: 1,
                 autofocus: false,
                 style: TextStyle(fontSize: 25),
-                decoration: InputDecoration(hintText: "输入一个任务名", border: InputBorder.none),
+                decoration: InputDecoration(
+                    hintText: "输入一个任务名", border: InputBorder.none),
               ),
               elevation: 0,
               backgroundColor: Colors.transparent,
@@ -61,16 +69,19 @@ class TaskDetailPageState extends State<TaskDetailPage> {
             Padding(
                 padding: EdgeInsets.only(bottom: 10, top: 50),
                 child: RaisedButton(
-                  padding: EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
+                  padding:
+                      EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
                   disabledColor: Color.fromARGB(0xFF, 53, 186, 243),
                   onPressed: null,
                   child: Text(
-                    "触发条件",
+                    "触发时间",
                     style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
                   elevation: 10,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(topRight: Radius.circular(8), bottomRight: Radius.circular(8))),
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(8),
+                          bottomRight: Radius.circular(8))),
                 )),
             Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
@@ -79,19 +90,20 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                     Expanded(
                         child: Text(
                       _conditionStr,
-                      style: TextStyle(fontSize: 15),
+                      style: TextStyle(fontSize: 20),
                     )),
                     FloatingActionButton(
                       elevation: 0,
                       onPressed: () async {
-                        dynamic  result = await Navigator.pushNamed(context, "/TimePickerPage");
+                        dynamic result = await Navigator.pushNamed(
+                            context, "/TimePickerPage");
                         if (result != null && result is TimeBean) {
                           setState(() {
+                            _conditionSet = true;
                             _conditionStr = result.format(context);
                           });
                         }
                         // showConditionDialog(context);
-
                       },
                       heroTag: "fab1",
                       backgroundColor: Color.fromARGB(0xFF, 53, 186, 243),
@@ -105,29 +117,49 @@ class TaskDetailPageState extends State<TaskDetailPage> {
             Padding(
                 padding: EdgeInsets.only(bottom: 10, top: 50),
                 child: RaisedButton(
-                  padding: EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
+                  padding:
+                      EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
                   disabledColor: Color.fromARGB(0xFF, 114, 132, 156),
                   onPressed: null,
                   child: Text(
-                    "执行任务",
+                    "选择应用",
                     style: TextStyle(fontSize: 20, color: Colors.white),
                   ),
                   elevation: 10,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(topRight: Radius.circular(8), bottomRight: Radius.circular(8))),
+                      borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(8),
+                          bottomRight: Radius.circular(8))),
                 )),
             Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: Row(
                   children: <Widget>[
+                    Visibility(
+                      child: Image.memory(
+                        _appIconBytes,
+                        width: 40,
+                        height: 40,
+                      ),
+                      visible: _taskSet,
+                    ),
                     Expanded(
                         child: Text(
-                      _taskStr,
-                      style: TextStyle(fontSize: 15),
+                      _taskSet ? "  $_appName" : "添加应用",
+                      style: TextStyle(fontSize: 20),
                     )),
                     FloatingActionButton(
                       elevation: 0,
-                      onPressed: () {},
+                      onPressed: () async {
+                        AppInfoBean appInfo = await CallNative.selectApp();
+                        if (appInfo != null) {
+                          setState(() {
+                            _taskSet = true;
+                            _appName = appInfo.appName;
+                            _appIconBytes = appInfo.appIconBytes;
+                          });
+                        }
+                      },
                       heroTag: "fab2",
                       child: Icon(Icons.add),
                       backgroundColor: Color.fromARGB(0xFF, 114, 132, 156),
@@ -138,6 +170,17 @@ class TaskDetailPageState extends State<TaskDetailPage> {
           ],
         ),
       ),
+      floatingActionButton: _conditionSet && _taskSet
+          ? Padding(
+              padding: EdgeInsets.only(bottom: 50),
+              child: FloatingActionButton(
+                onPressed: () {},
+                isExtended: false,
+                child: Icon(Icons.done),
+              ),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -150,7 +193,9 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                 SimpleDialogOption(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[Text("定时", style: TextStyle(fontSize: 18))],
+                    children: <Widget>[
+                      Text("定时", style: TextStyle(fontSize: 18))
+                    ],
                   ),
                   onPressed: () {
                     //选择一个时间
