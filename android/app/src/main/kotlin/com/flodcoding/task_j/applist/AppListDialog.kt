@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.flodcoding.task_j.R
+import com.flodcoding.task_j.utils.AppInstalledUtil
 import kotlinx.coroutines.*
 
 /**
@@ -76,7 +77,7 @@ class AppListDialog constructor(private val onAppSelectedListener: OnAppSelected
         recyclerView.adapter = mAdapter
 
         GlobalScope.launch(Dispatchers.IO) {
-            val list = AppListUtil.getSimpleInstalledAppInfoList(requireContext())
+            val list = AppInstalledUtil.getSimpleInstalledAppInfoList(requireContext())
             withContext(Dispatchers.Main) {
                 mAdapter.setDate(list)
                 progressBar.visibility = View.GONE
@@ -89,14 +90,14 @@ class AppListDialog constructor(private val onAppSelectedListener: OnAppSelected
 
 
     private inner class Adapter : RecyclerView.Adapter<Adapter.Holder>() {
-        var mInfoList: List<AppInfoBean> = ArrayList()
+        var mInfoTempList: List<AppInfoTempBean> = ArrayList()
         override fun getItemCount(): Int {
-            return mInfoList.size
+            return mInfoTempList.size
         }
 
 
-        fun setDate(list: List<AppInfoBean>) {
-            this.mInfoList = list;
+        fun setDate(list: List<AppInfoTempBean>) {
+            this.mInfoTempList = list;
             notifyDataSetChanged()
         }
 
@@ -107,7 +108,7 @@ class AppListDialog constructor(private val onAppSelectedListener: OnAppSelected
         }
 
         override fun onBindViewHolder(@NonNull holder: Holder, i: Int) {
-            val info = mInfoList[i]
+            val info = mInfoTempList[i]
             holder.imIcon.setImageDrawable(info.appIcon)
             holder.tvTitle.text = info.appName
             holder.itemView.setOnClickListener {
@@ -135,7 +136,7 @@ class AppListDialog constructor(private val onAppSelectedListener: OnAppSelected
 
 
     interface OnAppSelectedListener {
-        fun onSelected(appInfoBean: AppInfoBean?)
+        fun onSelected(appInfoTempBean: AppInfoTempBean?)
     }
 
 

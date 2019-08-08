@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/cupertino.dart';
@@ -20,6 +21,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
 
   Uint8List _appIconBytes = Uint8List(0);
   String _appName;
+  String _appImagePath;
 
   @override
   void initState() {
@@ -41,8 +43,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                 maxLines: 1,
                 autofocus: false,
                 style: TextStyle(fontSize: 25),
-                decoration: InputDecoration(
-                    hintText: "输入一个任务名", border: InputBorder.none),
+                decoration: InputDecoration(hintText: "输入一个任务名", border: InputBorder.none),
               ),
               elevation: 0,
               backgroundColor: Colors.transparent,
@@ -69,8 +70,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
             Padding(
                 padding: EdgeInsets.only(bottom: 10, top: 50),
                 child: RaisedButton(
-                  padding:
-                      EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
+                  padding: EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
                   disabledColor: Color.fromARGB(0xFF, 53, 186, 243),
                   onPressed: null,
                   child: Text(
@@ -79,9 +79,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                   ),
                   elevation: 10,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(8),
-                          bottomRight: Radius.circular(8))),
+                      borderRadius: BorderRadius.only(topRight: Radius.circular(8), bottomRight: Radius.circular(8))),
                 )),
             Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
@@ -95,8 +93,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                     FloatingActionButton(
                       elevation: 0,
                       onPressed: () async {
-                        dynamic result = await Navigator.pushNamed(
-                            context, "/TimePickerPage");
+                        dynamic result = await Navigator.pushNamed(context, "/TimePickerPage");
                         if (result != null && result is TimeBean) {
                           setState(() {
                             _conditionSet = true;
@@ -117,8 +114,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
             Padding(
                 padding: EdgeInsets.only(bottom: 10, top: 50),
                 child: RaisedButton(
-                  padding:
-                      EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
+                  padding: EdgeInsets.only(left: 40, right: 40, top: 10, bottom: 10),
                   disabledColor: Color.fromARGB(0xFF, 114, 132, 156),
                   onPressed: null,
                   child: Text(
@@ -127,9 +123,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                   ),
                   elevation: 10,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(8),
-                          bottomRight: Radius.circular(8))),
+                      borderRadius: BorderRadius.only(topRight: Radius.circular(8), bottomRight: Radius.circular(8))),
                 )),
             Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
@@ -143,6 +137,13 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                       ),
                       visible: _taskSet,
                     ),
+                    _appImagePath == null
+                        ? SizedBox()
+                        : Image.file(
+                            File(_appImagePath),
+                            width: 40,
+                            height: 40,
+                          ),
                     Expanded(
                         child: Text(
                       _taskSet ? "  $_appName" : "添加应用",
@@ -174,7 +175,18 @@ class TaskDetailPageState extends State<TaskDetailPage> {
           ? Padding(
               padding: EdgeInsets.only(bottom: 50),
               child: FloatingActionButton(
-                onPressed: () {},
+                onPressed: () async {
+                  if (_appImagePath == null) {
+                    CallNative.saveImage();
+                    _appImagePath = "";
+                  } else {
+                    //String path = await CallNative.getSavedList();
+                    //print(path);
+                    setState(() {
+                      //_appImagePath = path;
+                    });
+                  }
+                },
                 isExtended: false,
                 child: Icon(Icons.done),
               ),
@@ -193,9 +205,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                 SimpleDialogOption(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text("定时", style: TextStyle(fontSize: 18))
-                    ],
+                    children: <Widget>[Text("定时", style: TextStyle(fontSize: 18))],
                   ),
                   onPressed: () {
                     //选择一个时间

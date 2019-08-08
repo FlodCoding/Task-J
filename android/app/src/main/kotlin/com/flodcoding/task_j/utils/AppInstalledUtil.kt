@@ -1,11 +1,13 @@
-package com.flodcoding.task_j.applist
+package com.flodcoding.task_j.utils
 
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import java.util.*
+import com.flodcoding.task_j.applist.AppInfoTempBean
+import com.flodcoding.task_j.database.AppInfoBean
+import com.flodcoding.task_j.database.ObjectBoxUtil
 
 /**
  * SimpleDes:
@@ -13,7 +15,7 @@ import java.util.*
  * Date: 2019-08-06
  * UseDes:
  */
-object AppListUtil {
+object AppInstalledUtil {
 
     //获取用户安装的APP
     fun getInstalledApplication(context: Context, needSysAPP: Boolean): List<ResolveInfo> {
@@ -48,16 +50,16 @@ object AppListUtil {
     }
 
 
-    fun getSimpleInstalledAppInfoList(context: Context): List<AppInfoBean> {
+    fun getSimpleInstalledAppInfoList(context: Context): List<AppInfoTempBean> {
         val resolveInfos = getInstalledApplication(context, true)
         val packageManager = context.packageManager
-        val appInfoBeans = ArrayList<AppInfoBean>()
+        val appInfoBeans = ArrayList<AppInfoTempBean>()
         for (resolveInfo in resolveInfos) {
             val info = resolveInfo.activityInfo
             if (info != null) {
                 val iconDraw = resolveInfo.activityInfo.applicationInfo.loadIcon(packageManager)
                 val title = resolveInfo.activityInfo.applicationInfo.loadLabel(packageManager).toString()
-                val appInfoBean = AppInfoBean(iconDraw, title, info)
+                val appInfoBean = AppInfoTempBean(iconDraw, title, info)
                 appInfoBeans.add(appInfoBean)
             }
 
@@ -65,4 +67,54 @@ object AppListUtil {
 
         return appInfoBeans
     }
+
+    fun save(infoTemp: AppInfoTempBean) {
+        ObjectBoxUtil.get()?.boxFor(AppInfoBean::class.java)?.put(infoTemp.buildInfo())
+    }
+
+
+    /*fun getSaveList(): MutableList<AppInfoBean>? {
+        return ObjectBoxUtil.get()?.boxFor(AppInfoBean::class.java)?.all
+    }*/
+
+    fun getSaveListToFlutter(): ArrayList<Map<String, Any?>> {
+        val appInfoList = ObjectBoxUtil.get()?.boxFor(AppInfoBean::class.java)?.all
+        val list = ArrayList<Map<String, Any?>>()
+        appInfoList?.forEach {
+            list.add(mapOf(
+                    "appName" to it.appName,
+                    "appIconBytes" to it.appIconBytes
+            ))
+        }
+        return list
+    }
+
+
+    /* fun saveImage(context: Context, infoTemp: AppInfoTempBean): AppInfoBean? {
+
+         val filePath = context.filesDir.canonicalPath + "/imageCaches"
+         val dir = File(filePath)
+         if (!dir.exists()) {
+             dir.mkdirs()
+         }
+
+         val filename = infoTemp.appName + ".jpg"
+         val file = File(dir, filename)
+
+         try {
+             val fos = FileOutputStream(file)
+             fos.write(infoTemp.iconBytes)
+             fos.flush()
+             fos.close()
+
+             return AppInfoBean(appName = infoTemp.appName, appIconBytes = infoTemp.iconBytes)
+         } catch (e: Exception) {
+             e.printStackTrace()
+         }
+
+
+         return null
+     }
+ */
+
 }

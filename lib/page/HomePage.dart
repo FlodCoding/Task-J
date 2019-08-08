@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:task_j/model/bean/TaskItemBean.dart';
+import 'package:task_j/plugins/CallNative.dart';
 import 'package:task_j/widget/TaskItem.dart';
 
 class HomePage extends StatefulWidget {
@@ -70,9 +71,10 @@ class _HomePageState extends State<HomePage> {
               ),
           itemCount: list.length),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
+        onPressed: () async {
+          var result = await CallNative.getSavedList();
           setState(() {
-            list.add(TaskItemBean());
+            // list.add(TaskItemBean());`
           });
         },
         tooltip: 'Increment',

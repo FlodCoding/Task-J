@@ -6,7 +6,7 @@ import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.util.Base64
+import com.flodcoding.task_j.database.AppInfoBean
 import java.io.ByteArrayOutputStream
 
 /**
@@ -15,7 +15,8 @@ import java.io.ByteArrayOutputStream
  * Date: 2019-08-06
  * UseDes:
  */
-class AppInfoBean(val appIcon: Drawable?, val appName: String, val info: ActivityInfo) {
+class AppInfoTempBean(val appIcon: Drawable?, val appName: String, val info: ActivityInfo) {
+
 
     internal val startIntent: Intent
         get() {
@@ -37,9 +38,14 @@ class AppInfoBean(val appIcon: Drawable?, val appName: String, val info: Activit
             }
             return null
         }
-
+/*
     internal val appIconBase64Str: String
         get() {
             return Base64.encodeToString(iconBytes, Base64.NO_WRAP)
-        }
+        }*/
+
+
+    fun buildInfo():AppInfoBean{
+        return AppInfoBean(appName = appName,appIconBytes = iconBytes)
+    }
 }
