@@ -1,6 +1,3 @@
-import 'dart:io';
-import 'dart:typed_data';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:task_j/model/bean/TaskItemBean.dart';
@@ -12,23 +9,15 @@ class TaskDetailPage extends StatefulWidget {
 }
 
 class TaskDetailPageState extends State<TaskDetailPage> {
-  bool _conditionSet = false;
-  bool _taskSet = false;
-
-  String _conditionStr;
+  //String _conditionStr;
 
   //String _taskStr;
 
-  Uint8List _appIconBytes = Uint8List(0);
-  String _appName;
-  String _appImagePath;
+  TimeBean _timeBean;
+  AppInfoBean _appInfoBean;
 
-  @override
-  void initState() {
-    _conditionStr = "添加触发时间";
-    _appName = "选择应用";
-    super.initState();
-  }
+  /*String _appName;
+  Uint8List _appIconBytes = Uint8List(0);*/
 
   @override
   Widget build(BuildContext context) {
@@ -87,20 +76,18 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                   children: <Widget>[
                     Expanded(
                         child: Text(
-                      _conditionStr,
+                      _timeBean == null ? "添加触发时间" : _timeBean.format(context),
                       style: TextStyle(fontSize: 20),
                     )),
                     FloatingActionButton(
                       elevation: 0,
                       onPressed: () async {
                         dynamic result = await Navigator.pushNamed(context, "/TimePickerPage");
-                        if (result != null && result is TimeBean) {
+                        if (result is TimeBean) {
                           setState(() {
-                            _conditionSet = true;
-                            _conditionStr = result.format(context);
+                            _timeBean = result;
                           });
                         }
-                        // showConditionDialog(context);
                       },
                       heroTag: "fab1",
                       backgroundColor: Color.fromARGB(0xFF, 53, 186, 243),
@@ -129,24 +116,21 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: Row(
                   children: <Widget>[
-                    Visibility(
-                      child: Image.memory(
-                        _appIconBytes,
-                        width: 40,
-                        height: 40,
-                      ),
-                      visible: _taskSet,
+                    //app图标
+                    Container(
+                      child: _appInfoBean == null
+                          ? null
+                          : Image.memory(
+                              _appInfoBean.appIconBytes,
+                              width: 40,
+                              height: 40,
+                            ),
                     ),
-                    _appImagePath == null
-                        ? SizedBox()
-                        : Image.file(
-                            File(_appImagePath),
-                            width: 40,
-                            height: 40,
-                          ),
+
+                    //appName
                     Expanded(
                         child: Text(
-                      _taskSet ? "  $_appName" : "添加应用",
+                      _appInfoBean == null ? "添加应用" : "  ${_appInfoBean.appName}",
                       style: TextStyle(fontSize: 20),
                     )),
                     FloatingActionButton(
@@ -155,9 +139,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                         AppInfoBean appInfo = await CallNative.selectApp();
                         if (appInfo != null) {
                           setState(() {
-                            _taskSet = true;
-                            _appName = appInfo.appName;
-                            _appIconBytes = appInfo.appIconBytes;
+                            _appInfoBean = appInfo;
                           });
                         }
                       },
@@ -171,21 +153,13 @@ class TaskDetailPageState extends State<TaskDetailPage> {
           ],
         ),
       ),
-      floatingActionButton: _conditionSet && _taskSet
+      floatingActionButton: _timeBean != null && _appInfoBean != null
           ? Padding(
               padding: EdgeInsets.only(bottom: 50),
               child: FloatingActionButton(
                 onPressed: () async {
-                  if (_appImagePath == null) {
-                    CallNative.saveImage();
-                    _appImagePath = "";
-                  } else {
-                    //String path = await CallNative.getSavedList();
-                    //print(path);
-                    setState(() {
-                      //_appImagePath = path;
-                    });
-                  }
+                  CallNative.saveTask();
+                  Navigator.pop(context, TaskItemBean(_timeBean, _appInfoBean));
                 },
                 isExtended: false,
                 child: Icon(Icons.done),

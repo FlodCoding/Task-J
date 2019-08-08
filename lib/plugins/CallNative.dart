@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:task_j/model/bean/TaskItemBean.dart';
@@ -12,18 +12,24 @@ class CallNative {
       return null;
     } else {
       var appName = result["appName"];
-//      var appIconBytes = Base64Decoder().convert(result["appIconBytes"]);
       var appIconBytes = result["appIconBytes"];
       return AppInfoBean(appName, appIconBytes);
     }
   }
 
-  static saveImage() async {
-    _platform.invokeMethod('saveAppInfo');
+  static saveTask() async {
+    _platform.invokeMethod('saveTask');
   }
 
-  static Future<List> getSavedList() async {
-    List path = await _platform.invokeMethod('getSavedAppInfoList');
-    return path;
+  static Future<List<AppInfoBean>> getSavedList() async {
+    List result = await _platform.invokeMethod('getSavedAppInfoList');
+    if(result==null)
+      return null;
+
+    var list = List<AppInfoBean>();
+    result.forEach((e){
+      list.add(AppInfoBean(e["appName"], e["appIconBytes"]));
+    });
+    return list;
   }
 }

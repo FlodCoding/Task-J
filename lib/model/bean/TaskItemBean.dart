@@ -5,6 +5,14 @@ import 'package:flutter/material.dart';
 class TaskItemBean {
   TimeBean _timeBean;
   AppInfoBean _appInfoBean;
+
+  TaskItemBean(this._timeBean, this._appInfoBean);
+
+  AppInfoBean get appInfoBean => _appInfoBean;
+
+  TimeBean get timeBean => _timeBean;
+
+
 }
 
 class TimeBean {

@@ -3,6 +3,8 @@ import 'package:task_j/model/bean/TaskItemBean.dart';
 import 'package:task_j/plugins/CallNative.dart';
 import 'package:task_j/widget/TaskItem.dart';
 
+import 'TaskDetail.dart';
+
 class HomePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
@@ -23,7 +25,7 @@ class _HomePageState extends State<HomePage> {
         brightness: Brightness.light,
         actionsIconTheme: IconThemeData(color: Colors.black),
         actions: <Widget>[
-          PopupMenuButton(onSelected: (int) {
+          PopupMenuButton(onSelected: (int) async {
             switch (int) {
               case 0:
                 //TODO 去设置
@@ -37,13 +39,17 @@ class _HomePageState extends State<HomePage> {
                 break;
               case 1:
                 //TODO 去关于
-                showDialog(
+                /*showDialog(
                     context: context,
                     builder: (context) {
                       return AlertDialog(
                         content: Text("关于"),
                       );
-                    });
+                    });*/
+                var result = await CallNative.getSavedList();
+                setState(() {
+                  // list.add(TaskItemBean());`
+                });
                 break;
             }
           }, itemBuilder: (context) {
@@ -72,10 +78,12 @@ class _HomePageState extends State<HomePage> {
           itemCount: list.length),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          var result = await CallNative.getSavedList();
-          setState(() {
-            // list.add(TaskItemBean());`
-          });
+          dynamic result = await Navigator.push(context, MaterialPageRoute(builder: (context) => TaskDetailPage()));
+          if (result is TaskItemBean) {
+            setState(() {
+              list.add(result);
+            });
+          }
         },
         tooltip: 'Increment',
         child: Icon(Icons.add),
