@@ -18,8 +18,6 @@ class TaskItem extends StatefulWidget {
 }
 
 class _TaskItemState extends State<TaskItem> {
-  bool _switchValue = false;
-
   @override
   Widget build(BuildContext context) {
     final itemBean = widget._taskItemBean;
@@ -58,11 +56,11 @@ class _TaskItemState extends State<TaskItem> {
                         : Transform.scale(
                             scale: 0.7,
                             child: CupertinoSwitch(
-                              value: _switchValue,
+                              value: itemBean.start,
                               activeColor: Colors.blue,
                               onChanged: (bool) {
                                 setState(() {
-                                  _switchValue = !_switchValue;
+                                  itemBean.start = bool;
                                 });
                               },
                             ),

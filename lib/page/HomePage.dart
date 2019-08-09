@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
 typedef LongPressCallback();
 
 class _HomePageState extends State<HomePage> {
-  List<TaskItemBean> list = [];
+  List<TaskItemBean> _list = [];
   bool _showDeleteIcon = false;
 
   @override
@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
               case 0:
                 //TODO 去设置
                 setState(() {
-                  list.add(TaskItemBean(appInfo: null, time: null));
+                  _list.add(TaskItemBean(appInfo: null, time: null));
                 });
 
                 break;
@@ -67,18 +67,18 @@ class _HomePageState extends State<HomePage> {
               setState(() {
                 _showDeleteIcon = !_showDeleteIcon;
                 if (deleteThis) {
-                  list.removeAt(index);
+                  _list.removeAt(index);
                 }
               });
-            }, _showDeleteIcon, list[index]);
+            }, _showDeleteIcon, _list[index]);
           },
-          itemCount: list.length),
+          itemCount: _list.length),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           dynamic result = await Navigator.push(context, MaterialPageRoute(builder: (context) => TaskDetailPage()));
           if (result is TaskItemBean) {
             setState(() {
-              list.add(result);
+              _list.add(result);
             });
           }
         },
