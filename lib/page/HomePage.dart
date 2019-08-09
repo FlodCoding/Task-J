@@ -34,7 +34,7 @@ class _HomePageState extends State<HomePage> {
               case 0:
                 //TODO 去设置
                 setState(() {
-                  list.add(TaskItemBean(appInfo: null,time: null));
+                  list.add(TaskItemBean(appInfo: null, time: null));
                 });
 
                 break;
