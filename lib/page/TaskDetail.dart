@@ -159,7 +159,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
               child: FloatingActionButton(
                 onPressed: () async {
                   CallNative.saveTask();
-                  Navigator.pop(context, TaskItemBean(_timeBean, _appInfoBean));
+                  Navigator.pop(context, TaskItemBean(time: _timeBean, appInfo: _appInfoBean));
                 },
                 isExtended: false,
                 child: Icon(Icons.done),

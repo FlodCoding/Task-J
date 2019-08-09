@@ -12,12 +12,16 @@ class HomePage extends StatefulWidget {
   }
 }
 
+typedef LongPressCallback();
+
 class _HomePageState extends State<HomePage> {
   List<TaskItemBean> list = [];
+  bool _showDeleteIcon = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -29,23 +33,13 @@ class _HomePageState extends State<HomePage> {
             switch (int) {
               case 0:
                 //TODO 去设置
-                showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        content: Text("设置"),
-                      );
-                    });
+                setState(() {
+                  list.add(TaskItemBean(appInfo: null,time: null));
+                });
+
                 break;
               case 1:
                 //TODO 去关于
-                /*showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        content: Text("关于"),
-                      );
-                    });*/
                 var result = await CallNative.getSavedList();
                 setState(() {
                   // list.add(TaskItemBean());`
@@ -66,15 +60,18 @@ class _HomePageState extends State<HomePage> {
           })
         ],
       ),
-      body: ListView.separated(
+      body: ListView.builder(
           itemBuilder: (context, index) {
-            return TaskItem();
+            return TaskItem((showDeleteIcon, deleteThis) {
+              //OnDeleteCallback
+              setState(() {
+                _showDeleteIcon = !_showDeleteIcon;
+                if (deleteThis) {
+                  list.removeAt(index);
+                }
+              });
+            }, _showDeleteIcon, list[index]);
           },
-          separatorBuilder: (context, index) => Divider(
-                indent: 55,
-                endIndent: 20,
-                color: Colors.grey[400],
-              ),
           itemCount: list.length),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {

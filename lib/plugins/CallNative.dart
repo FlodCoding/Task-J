@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/services.dart';
 import 'package:task_j/model/bean/TaskItemBean.dart';
 
@@ -22,14 +20,12 @@ class CallNative {
   }
 
   static Future<List<AppInfoBean>> getSavedList() async {
-    List result = await _platform.invokeMethod('getSavedAppInfoList');
-    if(result==null)
-      return null;
+    dynamic result = await _platform.invokeMethod('getSavedAppInfoList');
 
-    var list = List<AppInfoBean>();
-    result.forEach((e){
-      list.add(AppInfoBean(e["appName"], e["appIconBytes"]));
-    });
-    return list;
+    if (result is List) {
+      return result.map((f) => AppInfoBean(f["appName"], f["appIconBytes"])).toList();
+    }
+
+    return null;
   }
 }
