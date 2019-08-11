@@ -2,9 +2,7 @@ package com.flodcoding.task_j.database
 
 import android.content.Context
 import com.flodcoding.task_j.utils.PrefsUtil
-import io.objectbox.Box
 import io.objectbox.BoxStore
-import java.util.*
 
 /**
  * SimpleDes:
@@ -14,7 +12,7 @@ import java.util.*
  *
  */
 object ObjectBoxUtil {
-    private var boxStore: BoxStore? = null
+    private lateinit var boxStore: BoxStore
 
     fun init(context: Context) {
         val version = PrefsUtil.getInt("ObjectBoxVersion", 0)
@@ -35,7 +33,7 @@ object ObjectBoxUtil {
     }
 
 
-    private fun buildObjectBox(context: Context, version: Int): BoxStore? {
+    private fun buildObjectBox(context: Context, version: Int): BoxStore {
         return MyObjectBox.builder()
                 .name("ObjectBox_" + version)
                 .androidContext(context.getApplicationContext())
@@ -43,28 +41,8 @@ object ObjectBoxUtil {
     }
 
 
-    fun get(): BoxStore? {
+    fun get(): BoxStore {
         return boxStore
     }
 
-    fun <T> boxFor(entityClass: Class<T>): Box<T>? {
-        return if (boxStore == null) null else boxStore!!.boxFor(entityClass)
-    }
-
-
-    fun <T> getAll(entityClass: Class<T>): List<T> {
-        return if (boxStore == null) ArrayList() else boxStore!!.boxFor(entityClass).all
-    }
-
-    fun <T> removeAll(entityClass: Class<T>) {
-        if (boxStore == null)
-            return
-        boxStore!!.boxFor(entityClass).removeAll()
-    }
-
-    fun <T> put(entityClass: Class<T>, entities: Collection<T>?) {
-        if (boxStore == null)
-            return
-        boxStore!!.boxFor(entityClass).put(entities)
-    }
 }

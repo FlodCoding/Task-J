@@ -6,8 +6,9 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import com.flodcoding.task_j.applist.AppInfoTempBean
-import com.flodcoding.task_j.database.AppInfoBean
 import com.flodcoding.task_j.database.ObjectBoxUtil
+import com.flodcoding.task_j.database.TaskBean
+import com.google.gson.Gson
 
 /**
  * SimpleDes:
@@ -68,53 +69,63 @@ object AppInstalledUtil {
         return appInfoBeans
     }
 
-    fun save(infoTemp: AppInfoTempBean) {
-        ObjectBoxUtil.get()?.boxFor(AppInfoBean::class.java)?.put(infoTemp.buildInfo())
+
+    fun put(taskBean: TaskBean?): Boolean {
+        if (taskBean == null)
+            return false
+        ObjectBoxUtil.get().boxFor(TaskBean::class.java).put(taskBean)
+        return true
+    }
+
+    fun delete(id: Int){
+        ObjectBoxUtil.get().boxFor(TaskBean::class.java).remove(id.toLong())
     }
 
 
-    /*fun getSaveList(): MutableList<AppInfoBean>? {
-        return ObjectBoxUtil.get()?.boxFor(AppInfoBean::class.java)?.all
+    fun getSaveListToFlutter(): String {
+        val appInfoList = ObjectBoxUtil.get().boxFor(TaskBean::class.java).all
+        /*val list = ArrayList<Map<String, Any?>>()
+        appInfoList?.forEach {
+            list.add(taskBeanToArg(it))
+        }*/
+        return Gson().toJson(appInfoList)
+    }
+
+
+/*
+    fun jsonToTaskBean(arg: String): TaskBean? {
+
+        var taskBean = TaskBean(isStart = true,id = 0)
+        taskBean.appInfo.target = AppInfoBean("s",)
+        taskBean.time.target = TimeBean(false,)
+
+        return
+
+           *//* return TaskBean(id = (arg["id"] as Int).toLong(),
+                    appName = arg["appName"] as String,
+                    appIconBytes = arg["appIconBytes"] as ByteArray,
+                    repeat = arg["repeat"] as Boolean,
+                    repeatInWeek = arg["repeatInWeek"] as List<Boolean>,
+                    dateTime = Date(arg["dateTime"] as Long),
+                    isStart = arg["isStart"] as Boolean
+            )*//*
+
+    }
+
+    fun taskBeanTojson(taskBean: TaskBean): Map<String, Any?> {
+        return mapOf(
+                "id" to taskBean.id,
+                "appName" to taskBean.appName,
+                "appIconBytes" to taskBean.appIconBytes,
+                "repeat" to taskBean.repeat,
+                "repeatInWeek" to taskBean.repeatInWeek,
+                "dateTime" to taskBean.dateTime.time,
+                "isStart" to taskBean.isStart
+        )
     }*/
 
-    fun getSaveListToFlutter(): ArrayList<Map<String, Any?>> {
-        val appInfoList = ObjectBoxUtil.get()?.boxFor(AppInfoBean::class.java)?.all
-        val list = ArrayList<Map<String, Any?>>()
-        appInfoList?.forEach {
-            list.add(mapOf(
-                    "appName" to it.appName,
-                    "appIconBytes" to it.appIconBytes
-            ))
-        }
-        return list
+    fun beanToJson(taskBean: TaskBean):String{
+       return Gson().toJson(taskBean)
     }
-
-
-    /* fun saveImage(context: Context, infoTemp: AppInfoTempBean): AppInfoBean? {
-
-         val filePath = context.filesDir.canonicalPath + "/imageCaches"
-         val dir = File(filePath)
-         if (!dir.exists()) {
-             dir.mkdirs()
-         }
-
-         val filename = infoTemp.appName + ".jpg"
-         val file = File(dir, filename)
-
-         try {
-             val fos = FileOutputStream(file)
-             fos.write(infoTemp.iconBytes)
-             fos.flush()
-             fos.close()
-
-             return AppInfoBean(appName = infoTemp.appName, appIconBytes = infoTemp.iconBytes)
-         } catch (e: Exception) {
-             e.printStackTrace()
-         }
-
-
-         return null
-     }
- */
 
 }

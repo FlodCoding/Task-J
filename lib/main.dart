@@ -34,8 +34,8 @@ class MyApp extends StatelessWidget {
       ],
       locale: const Locale('zh', 'CN'),
       routes: {
-        "/TaskDetailPage": (context) => TaskDetailPage(),
-        "/TimePickerPage": (context) => TimePickerPage(),
+        "/HomePage": (context) => HomePage(),
+
       },
     );
   }

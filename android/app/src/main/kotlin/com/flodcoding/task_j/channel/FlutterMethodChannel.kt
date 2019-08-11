@@ -1,6 +1,5 @@
 package com.flodcoding.task_j.channel
 
-import android.widget.Toast
 import com.flodcoding.task_j.FlutterFragmentActivity
 import com.flodcoding.task_j.applist.AppInfoTempBean
 import com.flodcoding.task_j.applist.AppListDialog
@@ -24,10 +23,7 @@ object FlutterMethodChannel {
             when {
                 call.method == "getSavedAppInfoList" -> {
                     val savedList = AppInstalledUtil.getSaveListToFlutter()
-                    if (savedList.isNotEmpty()) {
-                        result.success(savedList)
-                    }
-
+                    result.success(savedList)
                 }
                 call.method == "showInstallAppList" ->
                     AppListDialog(object : AppListDialog.OnAppSelectedListener {
@@ -46,11 +42,17 @@ object FlutterMethodChannel {
                         }
 
                     }).show(fragmentActivity.supportFragmentManager)
-                call.method == "saveTask" -> {
-                    AppInstalledUtil.save(mCurSelectAppTemp)
-                    Toast.makeText(fragmentActivity, "保存成功", Toast.LENGTH_SHORT).show()
+                call.method == "saveTask" || call.method == "addTask" -> {
+                    //AppInstalledUtil.put(AppInstalledUtil.argToTaskBean(call.arguments))
+
+
 
                 }
+                call.method == "deleteTask" -> {
+                    val id = (call.arguments as Map<*, *>)["id"] as Int
+                    AppInstalledUtil.delete(id)
+                }
+
                 else -> result.notImplemented()
             }
         }

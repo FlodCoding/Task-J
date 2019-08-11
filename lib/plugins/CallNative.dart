@@ -15,15 +15,49 @@ class CallNative {
     }
   }
 
-  static saveTask() async {
-    _platform.invokeMethod('saveTask');
+  static Map<String, dynamic> covertToMap(TaskItemBean taskBean) {
+    return <String, dynamic>{
+      'id': taskBean.id,
+      'appName': taskBean.appInfoBean.appName,
+      'appIconBytes': taskBean.appInfoBean.appIconBytes,
+      'repeat': taskBean.timeBean.repeat,
+      'repeatInWeek': taskBean.timeBean.repeatInWeek,
+      'dateTime': taskBean.timeBean.dateTime.millisecondsSinceEpoch,
+      'isStart': taskBean.isStart,
+    };
   }
 
-  static Future<List<AppInfoBean>> getSavedList() async {
+  static TaskItemBean mapToTaskBean(Map map) {
+    return TaskItemBean(
+      id: map["id"],
+      appInfo: AppInfoBean(map["appName"], map["appIconBytes"]),
+      time: TimeBean(
+          dateTime: DateTime.fromMillisecondsSinceEpoch(map["dateTime"]),
+          repeatInWeek: map["repeatInWeek"],
+          repeat: map["repeat"]),
+      start: map["isStart"],
+    );
+  }
+
+  static saveTask(TaskItemBean taskBean) async {
+    _platform.invokeMethod('saveTask', covertToMap(taskBean));
+  }
+
+  static addTask(TaskItemBean taskBean) async {
+    _platform.invokeMethod('addTask', covertToMap(taskBean));
+  }
+
+  static deleteTask(int id) {
+    _platform.invokeMethod('deleteTask', <String, dynamic>{
+      "id": id
+    });
+  }
+
+  static Future<List<TaskItemBean>> getSavedList() async {
     dynamic result = await _platform.invokeMethod('getSavedAppInfoList');
 
     if (result is List) {
-      return result.map((f) => AppInfoBean(f["appName"], f["appIconBytes"])).toList();
+      return result.map((f) => mapToTaskBean(f)).toList();
     }
 
     return null;

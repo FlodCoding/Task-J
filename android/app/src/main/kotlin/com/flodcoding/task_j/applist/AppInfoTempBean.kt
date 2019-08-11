@@ -6,7 +6,6 @@ import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import com.flodcoding.task_j.database.AppInfoBean
 import java.io.ByteArrayOutputStream
 
 /**
@@ -38,14 +37,5 @@ class AppInfoTempBean(val appIcon: Drawable?, val appName: String, val info: Act
             }
             return null
         }
-/*
-    internal val appIconBase64Str: String
-        get() {
-            return Base64.encodeToString(iconBytes, Base64.NO_WRAP)
-        }*/
 
-
-    fun buildInfo():AppInfoBean{
-        return AppInfoBean(appName = appName,appIconBytes = iconBytes)
-    }
 }

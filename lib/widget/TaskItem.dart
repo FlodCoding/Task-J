@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:task_j/model/bean/TaskItemBean.dart';
+import 'package:task_j/page/TaskDetail.dart';
+import 'package:task_j/plugins/CallNative.dart';
+import 'package:task_j/style/CommonStyle.dart';
 
 typedef OnDeleteCallback(bool showDeleteIcon, bool deleteThis);
 
@@ -20,7 +23,9 @@ class TaskItem extends StatefulWidget {
 class _TaskItemState extends State<TaskItem> {
   @override
   Widget build(BuildContext context) {
-    final itemBean = widget._taskItemBean;
+    final taskItemBean = widget._taskItemBean;
+    final appInfo = taskItemBean.appInfoBean;
+    final time = taskItemBean.timeBean;
     return Card(
         color: Colors.white,
         semanticContainer: true,
@@ -28,8 +33,18 @@ class _TaskItemState extends State<TaskItem> {
         margin: EdgeInsets.all(10),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         child: InkWell(
-          onTap: () => Navigator.pushNamed(context, "/TaskDetailPage"),
-          onLongPress: () => {widget._onDeleteCallback(widget._showDeleteIcon, false)},
+          onTap: () async {
+            dynamic result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return TaskDetailPage(taskItemBean);
+            }));
+            //TODO 不一定每次都修改
+            if (result is TaskItemBean) {
+              CallNative.saveTask(result);
+              //TODO
+              //修改当前的状态
+            }
+          },
+          onLongPress: () => {widget._onDeleteCallback(!widget._showDeleteIcon, false)},
           child: Padding(
             padding: EdgeInsets.all(10),
             child: Column(
@@ -41,14 +56,17 @@ class _TaskItemState extends State<TaskItem> {
                     Chip(
                       avatar: CircleAvatar(
                         backgroundColor: Colors.white,
-                        backgroundImage: MemoryImage(itemBean.appInfoBean.appIconBytes),
+                        backgroundImage: MemoryImage(appInfo.appIconBytes),
                       ),
-                      label: Text(itemBean.appInfoBean.appName),
+                      label: Text(appInfo.appName),
                       backgroundColor: Colors.grey[100],
                     ),
                     widget._showDeleteIcon
                         ? IconButton(
-                            icon: Icon(Icons.close),
+                            icon: Icon(
+                              Icons.close,
+                              color: CommonColors.commonGrey,
+                            ),
                             onPressed: () {
                               widget._onDeleteCallback(widget._showDeleteIcon, true);
                             },
@@ -56,11 +74,11 @@ class _TaskItemState extends State<TaskItem> {
                         : Transform.scale(
                             scale: 0.7,
                             child: CupertinoSwitch(
-                              value: itemBean.start,
+                              value: taskItemBean.isStart,
                               activeColor: Colors.blue,
                               onChanged: (bool) {
                                 setState(() {
-                                  itemBean.start = bool;
+                                  taskItemBean.isStart = bool;
                                 });
                               },
                             ),
@@ -68,17 +86,20 @@ class _TaskItemState extends State<TaskItem> {
                   ],
                 ),
                 Padding(padding: EdgeInsets.only(top: 10)),
-                Text("重复: 周一 周二 周一 周一 周一 周六 "),
+                Text(time.repeat ? "${time.repeatInWeekStr()}" : time.dateToString()),
                 Padding(padding: EdgeInsets.only(top: 10)),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: <Widget>[
                     Text(
-                      "10:50上午",
+                      time.timeOfDayToString(),
                       style: TextStyle(fontSize: 25),
                     ),
-                    Text("打开应用")
+                    Expanded(child: Text(" 时打开")),
+                    Icon(
+                      Icons.keyboard_arrow_right,
+                      size: 30,
+                      color: CommonColors.commonGrey,
+                    )
                   ],
                 )
               ],

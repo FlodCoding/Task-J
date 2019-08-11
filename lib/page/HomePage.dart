@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:task_j/model/bean/TaskItemBean.dart';
 import 'package:task_j/plugins/CallNative.dart';
@@ -29,21 +31,28 @@ class _HomePageState extends State<HomePage> {
         brightness: Brightness.light,
         actionsIconTheme: IconThemeData(color: Colors.black),
         actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.format_list_bulleted),
+            onPressed: () {},
+          ),
           PopupMenuButton(onSelected: (int) async {
             switch (int) {
               case 0:
                 //TODO 去设置
                 setState(() {
-                  _list.add(TaskItemBean(appInfo: null, time: null));
+                  _list.add(TaskItemBean(appInfo: AppInfoBean("sss", Uint8List(0)), time: null));
                 });
 
                 break;
               case 1:
                 //TODO 去关于
                 var result = await CallNative.getSavedList();
-                setState(() {
-                  // list.add(TaskItemBean());`
-                });
+                if(result !=null ){
+                  setState(() {
+                    _list = result;
+                  });
+                }
+
                 break;
             }
           }, itemBuilder: (context) {
@@ -65,9 +74,10 @@ class _HomePageState extends State<HomePage> {
             return TaskItem((showDeleteIcon, deleteThis) {
               //OnDeleteCallback
               setState(() {
-                _showDeleteIcon = !_showDeleteIcon;
+                _showDeleteIcon = showDeleteIcon;
                 if (deleteThis) {
                   _list.removeAt(index);
+                  CallNative.deleteTask(_list[index].id);
                 }
               });
             }, _showDeleteIcon, _list[index]);
@@ -75,10 +85,11 @@ class _HomePageState extends State<HomePage> {
           itemCount: _list.length),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          dynamic result = await Navigator.push(context, MaterialPageRoute(builder: (context) => TaskDetailPage()));
+          dynamic result = await Navigator.push(context, MaterialPageRoute(builder: (context) => TaskDetailPage(null)));
           if (result is TaskItemBean) {
             setState(() {
               _list.add(result);
+              CallNative.addTask(result);
             });
           }
         },

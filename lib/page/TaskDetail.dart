@@ -3,24 +3,27 @@ import 'package:flutter/material.dart';
 import 'package:task_j/model/bean/TaskItemBean.dart';
 import 'package:task_j/plugins/CallNative.dart';
 
+import 'condition/TimePickerPage.dart';
+
 class TaskDetailPage extends StatefulWidget {
+  final TaskItemBean _bean;
+
+  TaskDetailPage(this._bean);
+
   @override
   TaskDetailPageState createState() => TaskDetailPageState();
 }
 
 class TaskDetailPageState extends State<TaskDetailPage> {
-  //String _conditionStr;
-
-  //String _taskStr;
-
   TimeBean _timeBean;
   AppInfoBean _appInfoBean;
 
-  /*String _appName;
-  Uint8List _appIconBytes = Uint8List(0);*/
-
   @override
   Widget build(BuildContext context) {
+    if (widget._bean != null) {
+      _timeBean = widget._bean.timeBean;
+      _appInfoBean = widget._bean.appInfoBean;
+    }
     return Scaffold(
       appBar: PreferredSize(
           preferredSize: Size.fromHeight(100),
@@ -76,13 +79,18 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                   children: <Widget>[
                     Expanded(
                         child: Text(
-                      _timeBean == null ? "添加触发时间" : _timeBean.format(context),
+                      _timeBean == null ? "添加触发时间" : _timeBean.toString(),
                       style: TextStyle(fontSize: 20),
                     )),
                     FloatingActionButton(
                       elevation: 0,
                       onPressed: () async {
-                        dynamic result = await Navigator.pushNamed(context, "/TimePickerPage");
+                        dynamic result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => TimePickerPage(
+                                      _timeBean,
+                                    )));
                         if (result is TimeBean) {
                           setState(() {
                             _timeBean = result;
@@ -157,9 +165,9 @@ class TaskDetailPageState extends State<TaskDetailPage> {
           ? Padding(
               padding: EdgeInsets.only(bottom: 50),
               child: FloatingActionButton(
-                onPressed: () async {
-                  CallNative.saveTask();
-                  Navigator.pop(context, TaskItemBean(time: _timeBean, appInfo: _appInfoBean));
+                onPressed: () {
+                  var taskBean = TaskItemBean(time: _timeBean, appInfo: _appInfoBean);
+                  Navigator.pop(context, taskBean);
                 },
                 isExtended: false,
                 child: Icon(Icons.done),
@@ -168,45 +176,5 @@ class TaskDetailPageState extends State<TaskDetailPage> {
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
-  }
-
-  showConditionDialog(BuildContext context) {
-    showDialog(
-        context: context,
-        builder: (context) => SimpleDialog(
-              title: Text("触发类型", style: TextStyle(fontSize: 22)),
-              children: <Widget>[
-                SimpleDialogOption(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[Text("定时", style: TextStyle(fontSize: 18))],
-                  ),
-                  onPressed: () {
-                    //选择一个时间
-                    Navigator.pop(context, 1);
-                  },
-                ),
-                SimpleDialogOption(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        "施工中...",
-                        style: TextStyle(fontSize: 18),
-                      )
-                    ],
-                  ),
-                ),
-              ],
-            )).then((value) async {
-      if (value == 1) {
-        //时间选择的弹窗
-        /*showTimePicker(
-          context: context,
-          initialTime: TimeOfDay.now(),
-        );*/
-        Future va = await Navigator.pushNamed(context, "/TimePickerPage");
-      }
-    });
   }
 }
