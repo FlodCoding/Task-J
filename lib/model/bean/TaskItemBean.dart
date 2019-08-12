@@ -20,23 +20,23 @@ class TaskItemBean {
 
   TimeBean get timeBean => _timeBean;
 
-  TaskItemBean.fromJson(Map<String, dynamic> json) {
+  TaskItemBean.fromJson(Map<dynamic, dynamic> json) {
     id = json['id'];
     isStart = json['isStart'];
     _appInfoBean = json['appInfo'] != null ? AppInfoBean.fromJson(json['appInfo']) : null;
     _timeBean = json['time'] != null ? TimeBean.fromJson(json['time']) : null;
   }
 
-  Map<String, dynamic> toJson() {
-    final Map<String, dynamic> data = new Map<String, dynamic>();
+  Map<dynamic, dynamic> toJson() {
+    final Map<dynamic, dynamic> data = new Map<dynamic, dynamic>();
     data['id'] = id;
     data['isStart'] = isStart;
     if (_timeBean != null) {
-      data['time'] = _timeBean;
+      data['time'] = _timeBean.toJson();
     }
 
     if (_appInfoBean != null) {
-      data['appInfo'] = _appInfoBean;
+      data['appInfo'] = _appInfoBean.toJson();
     }
     return data;
   }

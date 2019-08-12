@@ -47,7 +47,7 @@ class _HomePageState extends State<HomePage> {
               case 1:
                 //TODO 去关于
                 var result = await CallNative.getSavedList();
-                if(result !=null ){
+                if (result != null) {
                   setState(() {
                     _list = result;
                   });
@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
           if (result is TaskItemBean) {
             setState(() {
               _list.add(result);
-              CallNative.addTask(result);
+              CallNative.updateTask(result);
             });
           }
         },

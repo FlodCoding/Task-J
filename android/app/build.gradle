@@ -23,9 +23,8 @@ if (flutterVersionName == null) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt' // if using Kotlin
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
-apply plugin: 'io.objectbox'
+apply plugin: 'kotlin-kapt' // if using Kotlin
 
 android {
     compileSdkVersion 28
@@ -71,7 +70,10 @@ dependencies {
     implementation 'com.github.bumptech.glide:glide:4.9.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
 
-    implementation "io.objectbox:objectbox-kotlin:2.3.4"
-    kapt "io.objectbox:objectbox-processor:2.3.4"
     implementation 'com.google.code.gson:gson:2.8.5'
+
+    def room_version = "2.2.0-alpha02"
+    implementation "androidx.room:room-runtime:$room_version"
+    kapt "androidx.room:room-compiler:$room_version"
+    implementation "androidx.room:room-ktx:$room_version"
 }

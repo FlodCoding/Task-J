@@ -1,6 +1,6 @@
 package com.flodcoding.task_j
 
-import com.flodcoding.task_j.database.ObjectBoxUtil
+import com.flodcoding.task_j.database.AppDatabase
 import com.flodcoding.task_j.utils.PrefsUtil
 import io.flutter.app.FlutterApplication
 
@@ -16,6 +16,6 @@ class App : FlutterApplication() {
     override fun onCreate() {
         super.onCreate()
         PrefsUtil.init(this)
-        ObjectBoxUtil.init(this)
+        AppDatabase.init(this)
     }
 }

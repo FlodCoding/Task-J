@@ -39,7 +39,7 @@ class _TaskItemState extends State<TaskItem> {
             }));
             //TODO 不一定每次都修改
             if (result is TaskItemBean) {
-              CallNative.saveTask(result);
+              CallNative.updateTask(result);
               //TODO
               //修改当前的状态
             }

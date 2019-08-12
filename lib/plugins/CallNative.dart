@@ -1,3 +1,5 @@
+import "dart:convert" show json;
+
 import 'package:flutter/services.dart';
 import 'package:task_j/model/bean/TaskItemBean.dart';
 
@@ -39,25 +41,23 @@ class CallNative {
     );
   }
 
-  static saveTask(TaskItemBean taskBean) async {
-    _platform.invokeMethod('saveTask', covertToMap(taskBean));
-  }
-
-  static addTask(TaskItemBean taskBean) async {
-    _platform.invokeMethod('addTask', covertToMap(taskBean));
+  static updateTask(TaskItemBean taskBean) async {
+    var map = taskBean.toJson();
+    _platform.invokeMethod('updateTask', map);
   }
 
   static deleteTask(int id) {
-    _platform.invokeMethod('deleteTask', <String, dynamic>{
-      "id": id
-    });
+    _platform.invokeMethod('deleteTask', <String, dynamic>{"id": id});
   }
 
   static Future<List<TaskItemBean>> getSavedList() async {
-    dynamic result = await _platform.invokeMethod('getSavedAppInfoList');
+    dynamic result = await _platform.invokeMethod('getTaskList');
 
-    if (result is List) {
-      return result.map((f) => mapToTaskBean(f)).toList();
+    var resultList = json.decode(result);
+    if (resultList is List) {
+      return resultList.map((f) {
+        TaskItemBean.fromJson(f);
+      }).toList();
     }
 
     return null;

@@ -6,9 +6,6 @@ import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import com.flodcoding.task_j.applist.AppInfoTempBean
-import com.flodcoding.task_j.database.ObjectBoxUtil
-import com.flodcoding.task_j.database.TaskBean
-import com.google.gson.Gson
 
 /**
  * SimpleDes:
@@ -16,7 +13,7 @@ import com.google.gson.Gson
  * Date: 2019-08-06
  * UseDes:
  */
-object AppInstalledUtil {
+object TaskUtil {
 
     //获取用户安装的APP
     fun getInstalledApplication(context: Context, needSysAPP: Boolean): List<ResolveInfo> {
@@ -70,38 +67,19 @@ object AppInstalledUtil {
     }
 
 
-    fun put(taskBean: TaskBean?): Boolean {
-        if (taskBean == null)
-            return false
-        ObjectBoxUtil.get().boxFor(TaskBean::class.java).put(taskBean)
-        return true
-    }
 
-    fun delete(id: Int){
-        ObjectBoxUtil.get().boxFor(TaskBean::class.java).remove(id.toLong())
-    }
-
-
-    fun getSaveListToFlutter(): String {
-        val appInfoList = ObjectBoxUtil.get().boxFor(TaskBean::class.java).all
-        /*val list = ArrayList<Map<String, Any?>>()
-        appInfoList?.forEach {
-            list.add(taskBeanToArg(it))
-        }*/
-        return Gson().toJson(appInfoList)
-    }
 
 
 /*
-    fun jsonToTaskBean(arg: String): TaskBean? {
+    fun jsonToTaskBean(arg: String): Task? {
 
-        var taskBean = TaskBean(isStart = true,id = 0)
-        taskBean.appInfo.target = AppInfoBean("s",)
-        taskBean.time.target = TimeBean(false,)
+        var taskBean = Task(isStart = true,id = 0)
+        taskBean.appInfo.target = AppInfo("s",)
+        taskBean.time.target = Time(false,)
 
         return
 
-           *//* return TaskBean(id = (arg["id"] as Int).toLong(),
+           *//* return Task(id = (arg["id"] as Int).toLong(),
                     appName = arg["appName"] as String,
                     appIconBytes = arg["appIconBytes"] as ByteArray,
                     repeat = arg["repeat"] as Boolean,
@@ -112,7 +90,7 @@ object AppInstalledUtil {
 
     }
 
-    fun taskBeanTojson(taskBean: TaskBean): Map<String, Any?> {
+    fun taskBeanTojson(taskBean: Task): Map<String, Any?> {
         return mapOf(
                 "id" to taskBean.id,
                 "appName" to taskBean.appName,
@@ -124,8 +102,5 @@ object AppInstalledUtil {
         )
     }*/
 
-    fun beanToJson(taskBean: TaskBean):String{
-       return Gson().toJson(taskBean)
-    }
 
 }

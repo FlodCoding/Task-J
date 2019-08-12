@@ -18,7 +18,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.flodcoding.task_j.R
-import com.flodcoding.task_j.utils.AppInstalledUtil
+import com.flodcoding.task_j.utils.TaskUtil
 import kotlinx.coroutines.*
 
 /**
@@ -77,7 +77,7 @@ class AppListDialog constructor(private val onAppSelectedListener: OnAppSelected
         recyclerView.adapter = mAdapter
 
         GlobalScope.launch(Dispatchers.IO) {
-            val list = AppInstalledUtil.getSimpleInstalledAppInfoList(requireContext())
+            val list = TaskUtil.getSimpleInstalledAppInfoList(requireContext())
             withContext(Dispatchers.Main) {
                 mAdapter.setDate(list)
                 progressBar.visibility = View.GONE
