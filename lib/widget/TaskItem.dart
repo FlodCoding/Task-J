@@ -2,17 +2,22 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:task_j/model/bean/TaskItemBean.dart';
 import 'package:task_j/page/TaskDetail.dart';
-import 'package:task_j/plugins/CallNative.dart';
 import 'package:task_j/style/CommonStyle.dart';
 
-typedef OnDeleteCallback(bool showDeleteIcon, bool deleteThis);
+typedef OnLongPress(bool showDeleteIcon);
+typedef OnDelete(int index, TaskItemBean task);
+typedef OnUpdate(int index, TaskItemBean task);
 
 class TaskItem extends StatefulWidget {
-  final bool _showDeleteIcon;
-  final OnDeleteCallback _onDeleteCallback;
-  final TaskItemBean _taskItemBean;
+  final bool showDeleteIcon;
+  final OnDelete onDelete;
+  final OnLongPress onLongPress;
+  TaskItemBean taskBean;
+  final OnUpdate onUpdate;
+  final int index;
 
-  TaskItem(this._onDeleteCallback, this._showDeleteIcon, this._taskItemBean);
+  TaskItem({this.index, this.showDeleteIcon, @required this.taskBean, this.onLongPress, this.onDelete, this.onUpdate})
+      : assert(taskBean != null);
 
   @override
   State<StatefulWidget> createState() {
@@ -23,9 +28,9 @@ class TaskItem extends StatefulWidget {
 class _TaskItemState extends State<TaskItem> {
   @override
   Widget build(BuildContext context) {
-    final taskItemBean = widget._taskItemBean;
-    final appInfo = taskItemBean.appInfoBean;
-    final time = taskItemBean.timeBean;
+    final task = widget.taskBean;
+    final appInfo = task.appInfoBean;
+    final time = task.timeBean;
     return Card(
         color: Colors.white,
         semanticContainer: true,
@@ -35,16 +40,17 @@ class _TaskItemState extends State<TaskItem> {
         child: InkWell(
           onTap: () async {
             dynamic result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return TaskDetailPage(taskItemBean);
+              return TaskDetailPage(task);
             }));
-            //TODO 不一定每次都修改
             if (result is TaskItemBean) {
-              CallNative.updateTask(result);
-              //TODO
-              //修改当前的状态
+              widget.onUpdate(widget.index, result);
+
+              setState(() {
+                widget.taskBean = result;
+              });
             }
           },
-          onLongPress: () => {widget._onDeleteCallback(!widget._showDeleteIcon, false)},
+          onLongPress: () => {widget.onLongPress(!widget.showDeleteIcon)},
           child: Padding(
             padding: EdgeInsets.all(10),
             child: Column(
@@ -61,24 +67,25 @@ class _TaskItemState extends State<TaskItem> {
                       label: Text(appInfo.appName),
                       backgroundColor: Colors.grey[100],
                     ),
-                    widget._showDeleteIcon
+                    widget.showDeleteIcon
                         ? IconButton(
                             icon: Icon(
                               Icons.close,
                               color: CommonColors.commonGrey,
                             ),
                             onPressed: () {
-                              widget._onDeleteCallback(widget._showDeleteIcon, true);
+                              widget.onDelete(widget.index, task);
                             },
                           )
                         : Transform.scale(
                             scale: 0.7,
                             child: CupertinoSwitch(
-                              value: taskItemBean.isStart,
+                              value: task.isStart,
                               activeColor: Colors.blue,
                               onChanged: (bool) {
                                 setState(() {
-                                  taskItemBean.isStart = bool;
+                                  widget.taskBean.isStart = bool;
+                                  widget.onUpdate(widget.index, widget.taskBean);
                                 });
                               },
                             ),

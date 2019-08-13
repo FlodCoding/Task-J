@@ -33,15 +33,16 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
     _optionIconAnim = new Tween(begin: 0.0, end: 0.125).animate(_optionIconAnimController);
 
     if (widget._timeBean != null) {
-      _timeBean = widget._timeBean;
+      var bean = widget._timeBean;
+      _timeBean = TimeBean(repeat: bean.repeat, repeatInWeek: bean.repeatInWeek, dateTime: bean.dateTime);
       isDateSet = true;
     } else {
       _timeBean = TimeBean(dateTime: _today);
+      _timeBean.dateTime = _today.add(Duration(days: 1));
       isDateSet = false;
     }
 
     _weekSelectedText = _timeBean.repeatInWeekStr();
-    _timeBean.dateTime = _today.add(Duration(days: 1));
     _daySelectedText = _timeBean.dateToString();
   }
 

@@ -3,6 +3,7 @@ package com.flodcoding.task_j.channel
 import com.flodcoding.task_j.FlutterFragmentActivity
 import com.flodcoding.task_j.applist.AppInfoTempBean
 import com.flodcoding.task_j.applist.AppListDialog
+import com.flodcoding.task_j.database.AppInfo
 import com.flodcoding.task_j.database.Task
 import com.flodcoding.task_j.database.TaskModel
 import com.flodcoding.task_j.utils.JsonUtil
@@ -18,7 +19,6 @@ import kotlinx.coroutines.runBlocking
  */
 object FlutterMethodChannel {
     private const val CHANNEL = "com.flod.task_j.android"
-    private lateinit var mCurSelectAppTemp: AppInfoTempBean
 
     fun registerMethodCallBack(fragmentActivity: FlutterFragmentActivity) {
 
@@ -30,24 +30,16 @@ object FlutterMethodChannel {
                         AppListDialog(object : AppListDialog.OnAppSelectedListener {
                             override fun onSelected(appInfoTempBean: AppInfoTempBean?) {
                                 if (appInfoTempBean != null) {
-
-                                    mCurSelectAppTemp = appInfoTempBean
-                                    result.success(mapOf(
-                                            "appName" to appInfoTempBean.appName,
-                                            "appIconBytes" to appInfoTempBean.iconBytes
-
-                                    ))
-                                } else {
-
+                                    result.success(AppInfo(appInfoTempBean.appName, appInfoTempBean.iconBytes
+                                            ?: ByteArray(0)).toMap())
                                 }
                             }
 
                         }).show(fragmentActivity.supportFragmentManager)
 
                     call.method == "getTaskList" -> {
-                        //val tasks = JsonUtil.jsonStrToObjList(JsonUtil.objToJsonStr(TaskModel.getTaskList())!!, Map::class.java)
-
-
+                        val tasks = TaskModel.getTaskList().map { it.toMap() }.toList()
+                        result.success(tasks)
                     }
 
 
@@ -57,8 +49,8 @@ object FlutterMethodChannel {
                         print("saveSuccess")
                     }
                     call.method == "deleteTask" -> {
-                        val id = (call.arguments as Map<*, *>)["id"] as Long
-                        TaskModel.delete(id)
+                        val id = (call.arguments as Map<*, *>)["id"] as Number
+                        TaskModel.delete(id.toLong())
                     }
 
                     else -> result.notImplemented()

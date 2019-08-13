@@ -1,5 +1,3 @@
-import "dart:convert" show json;
-
 import 'package:flutter/services.dart';
 import 'package:task_j/model/bean/TaskItemBean.dart';
 
@@ -11,34 +9,8 @@ class CallNative {
     if (result == null) {
       return null;
     } else {
-      var appName = result["appName"];
-      var appIconBytes = result["appIconBytes"];
-      return AppInfoBean(appName, appIconBytes);
+      return AppInfoBean.fromJson(Map<String, dynamic>.from(result));
     }
-  }
-
-  static Map<String, dynamic> covertToMap(TaskItemBean taskBean) {
-    return <String, dynamic>{
-      'id': taskBean.id,
-      'appName': taskBean.appInfoBean.appName,
-      'appIconBytes': taskBean.appInfoBean.appIconBytes,
-      'repeat': taskBean.timeBean.repeat,
-      'repeatInWeek': taskBean.timeBean.repeatInWeek,
-      'dateTime': taskBean.timeBean.dateTime.millisecondsSinceEpoch,
-      'isStart': taskBean.isStart,
-    };
-  }
-
-  static TaskItemBean mapToTaskBean(Map map) {
-    return TaskItemBean(
-      id: map["id"],
-      appInfo: AppInfoBean(map["appName"], map["appIconBytes"]),
-      time: TimeBean(
-          dateTime: DateTime.fromMillisecondsSinceEpoch(map["dateTime"]),
-          repeatInWeek: map["repeatInWeek"],
-          repeat: map["repeat"]),
-      start: map["isStart"],
-    );
   }
 
   static updateTask(TaskItemBean taskBean) async {
@@ -52,12 +24,8 @@ class CallNative {
 
   static Future<List<TaskItemBean>> getSavedList() async {
     dynamic result = await _platform.invokeMethod('getTaskList');
-
-    var resultList = json.decode(result);
-    if (resultList is List) {
-      return resultList.map((f) {
-        TaskItemBean.fromJson(f);
-      }).toList();
+    if (result is List) {
+      return result.map((f) => f = TaskItemBean.fromJson(Map<String, dynamic>.from(f))).toList();
     }
 
     return null;

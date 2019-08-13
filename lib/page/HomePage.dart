@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:task_j/model/bean/TaskItemBean.dart';
 import 'package:task_j/plugins/CallNative.dart';
@@ -14,11 +12,19 @@ class HomePage extends StatefulWidget {
   }
 }
 
-typedef LongPressCallback();
-
 class _HomePageState extends State<HomePage> {
   List<TaskItemBean> _list = [];
   bool _showDeleteIcon = false;
+
+  @override
+  void initState() {
+    super.initState();
+    CallNative.getSavedList().then((result) {
+      if (result != null && result.isNotEmpty) {
+        setState(() => _list = result);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,9 +45,6 @@ class _HomePageState extends State<HomePage> {
             switch (int) {
               case 0:
                 //TODO 去设置
-                setState(() {
-                  _list.add(TaskItemBean(appInfo: AppInfoBean("sss", Uint8List(0)), time: null));
-                });
 
                 break;
               case 1:
@@ -71,16 +74,24 @@ class _HomePageState extends State<HomePage> {
       ),
       body: ListView.builder(
           itemBuilder: (context, index) {
-            return TaskItem((showDeleteIcon, deleteThis) {
-              //OnDeleteCallback
-              setState(() {
-                _showDeleteIcon = showDeleteIcon;
-                if (deleteThis) {
-                  _list.removeAt(index);
-                  CallNative.deleteTask(_list[index].id);
-                }
-              });
-            }, _showDeleteIcon, _list[index]);
+            return TaskItem(
+              showDeleteIcon: _showDeleteIcon,
+              taskBean: _list[index],
+              onDelete: (index, task) {
+                CallNative.deleteTask(task.id);
+                setState(() {
+                  _list.remove(task);
+                });
+              },
+              onLongPress: (showDeleteIcon) {
+                setState(() {
+                  _showDeleteIcon = showDeleteIcon;
+                });
+              },
+              onUpdate: (index, task) {
+                CallNative.updateTask(task);
+              },
+            );
           },
           itemCount: _list.length),
       floatingActionButton: FloatingActionButton(

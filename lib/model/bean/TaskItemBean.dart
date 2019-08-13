@@ -6,37 +6,36 @@ import 'package:intl/intl.dart';
 class TaskItemBean {
   int id;
   bool isStart;
-  AppInfoBean _appInfoBean;
-  TimeBean _timeBean;
+  AppInfoBean appInfoBean;
+  TimeBean timeBean;
 
   TaskItemBean({int id = 0, @required TimeBean time, @required AppInfoBean appInfo, bool start = true}) {
     this.id = id;
     isStart = start;
-    _timeBean = time;
-    _appInfoBean = appInfo;
+    timeBean = time;
+    appInfoBean = appInfo;
   }
 
-  AppInfoBean get appInfoBean => _appInfoBean;
 
-  TimeBean get timeBean => _timeBean;
 
-  TaskItemBean.fromJson(Map<dynamic, dynamic> json) {
-    id = json['id'];
-    isStart = json['isStart'];
-    _appInfoBean = json['appInfo'] != null ? AppInfoBean.fromJson(json['appInfo']) : null;
-    _timeBean = json['time'] != null ? TimeBean.fromJson(json['time']) : null;
+  TaskItemBean.fromJson(Map<String, dynamic> jsonMap) {
+    id = jsonMap['id'];
+    isStart = jsonMap['isStart'];
+    appInfoBean =
+        jsonMap['appInfo'] != null ? AppInfoBean.fromJson(Map<String, dynamic>.from(jsonMap['appInfo'])) : null;
+    timeBean = jsonMap['time'] != null ? TimeBean.fromJson(Map<String, dynamic>.from(jsonMap['time'])) : null;
   }
 
-  Map<dynamic, dynamic> toJson() {
-    final Map<dynamic, dynamic> data = new Map<dynamic, dynamic>();
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = id;
     data['isStart'] = isStart;
-    if (_timeBean != null) {
-      data['time'] = _timeBean.toJson();
+    if (timeBean != null) {
+      data['time'] = timeBean.toJson();
     }
 
-    if (_appInfoBean != null) {
-      data['appInfo'] = _appInfoBean.toJson();
+    if (appInfoBean != null) {
+      data['appInfo'] = appInfoBean.toJson();
     }
     return data;
   }
@@ -49,6 +48,7 @@ class TimeBean {
 
   static String get strToday => "今天";
 
+
   List<bool> repeatInWeek;
   bool repeat;
   DateTime dateTime;
@@ -59,13 +59,14 @@ class TimeBean {
     dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day, timeOfDay.hour, timeOfDay.minute);
   }
 
-  TimeBean({@required DateTime dateTime, List<dynamic> repeatInWeek, bool repeat = false}) {
+  TimeBean({@required DateTime dateTime, List<bool> repeatInWeek, bool repeat = false}) {
     if (repeatInWeek == null) repeatInWeek = List.generate(7, (index) => false);
-    this.repeatInWeek = repeatInWeek.cast();
+    this.repeatInWeek = repeatInWeek;
     this.repeat = repeat;
-
     this.dateTime = dateTime;
   }
+
+
 
   String repeatInWeekStr() {
     repeat = repeatInWeek.any((element) => element);
@@ -101,10 +102,10 @@ class TimeBean {
     return "$repeatStr${timeOfDayToString()}";
   }
 
-  TimeBean.fromJson(Map<String, dynamic> json) {
-    repeat = json['repeat'];
-    repeatInWeek = json['repeatInWeek'];
-    dateTime = DateTime.fromMillisecondsSinceEpoch(json['dateTime']);
+  TimeBean.fromJson(Map<String, dynamic> jsonMap) {
+    repeat = jsonMap['repeat'];
+    repeatInWeek = List.castFrom(jsonMap['repeatInWeek']);
+    dateTime = DateTime.fromMillisecondsSinceEpoch(jsonMap['dateTime']);
   }
 
   Map<String, dynamic> toJson() {
@@ -125,9 +126,9 @@ class AppInfoBean {
     this.appIconBytes,
   );
 
-  AppInfoBean.fromJson(Map<String, dynamic> json) {
-    appName = json['appName'];
-    appIconBytes = json['appIconBytes'];
+  AppInfoBean.fromJson(Map<String, dynamic> jsonMap) {
+    appName = jsonMap['appName'];
+    appIconBytes = Uint8List.fromList(jsonMap['appIconBytes']);
   }
 
   Map<String, dynamic> toJson() {

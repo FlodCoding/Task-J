@@ -38,4 +38,5 @@ class AppInfoTempBean(val appIcon: Drawable?, val appName: String, val info: Act
             return null
         }
 
+
 }

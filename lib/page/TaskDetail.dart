@@ -15,28 +15,30 @@ class TaskDetailPage extends StatefulWidget {
 }
 
 class TaskDetailPageState extends State<TaskDetailPage> {
-  TimeBean _timeBean;
-  AppInfoBean _appInfoBean;
+  TaskItemBean _taskItemBean;
+
+  @override
+  void initState() {
+    super.initState();
+    if(widget._bean==null){
+      _taskItemBean = TaskItemBean(time: null, appInfo: null);
+    }else{
+      _taskItemBean = widget._bean;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (widget._bean != null) {
-      _timeBean = widget._bean.timeBean;
-      _appInfoBean = widget._bean.appInfoBean;
-    }
+    final _timeBean = _taskItemBean.timeBean;
+    final _appInfoBean = _taskItemBean.appInfoBean;
+
     return Scaffold(
       appBar: PreferredSize(
-          preferredSize: Size.fromHeight(100),
+          preferredSize: Size.fromHeight(50),
           child: Padding(
             padding: EdgeInsets.only(top: 20),
             child: AppBar(
               brightness: Brightness.light,
-              title: TextField(
-                maxLines: 1,
-                autofocus: false,
-                style: TextStyle(fontSize: 25),
-                decoration: InputDecoration(hintText: "输入一个任务名", border: InputBorder.none),
-              ),
               elevation: 0,
               backgroundColor: Colors.transparent,
               leading: Padding(
@@ -93,7 +95,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                                     )));
                         if (result is TimeBean) {
                           setState(() {
-                            _timeBean = result;
+                            _taskItemBean.timeBean = result;
                           });
                         }
                       },
@@ -147,7 +149,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                         AppInfoBean appInfo = await CallNative.selectApp();
                         if (appInfo != null) {
                           setState(() {
-                            _appInfoBean = appInfo;
+                            _taskItemBean.appInfoBean = appInfo;
                           });
                         }
                       },
@@ -166,8 +168,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
               padding: EdgeInsets.only(bottom: 50),
               child: FloatingActionButton(
                 onPressed: () {
-                  var taskBean = TaskItemBean(time: _timeBean, appInfo: _appInfoBean);
-                  Navigator.pop(context, taskBean);
+                  Navigator.pop(context, _taskItemBean);
                 },
                 isExtended: false,
                 child: Icon(Icons.done),
