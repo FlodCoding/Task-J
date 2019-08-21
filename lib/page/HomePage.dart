@@ -97,10 +97,11 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           dynamic result = await Navigator.push(context, MaterialPageRoute(builder: (context) => TaskDetailPage(null)));
-          if (result is TaskItemBean) {
+          TaskItemBean taskItemBean = await CallNative.addTask(result);
+
+          if (taskItemBean != null) {
             setState(() {
-              _list.add(result);
-              CallNative.updateTask(result);
+              _list.add(taskItemBean);
             });
           }
         },

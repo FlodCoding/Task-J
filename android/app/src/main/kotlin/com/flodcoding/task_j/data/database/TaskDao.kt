@@ -1,4 +1,4 @@
-package com.flodcoding.task_j.database
+package com.flodcoding.task_j.data.database
 
 import androidx.room.*
 
@@ -12,7 +12,7 @@ import androidx.room.*
 @Dao
 interface TaskDao {
     @Query("SELECT * from task where id = :id LIMIT 1")
-    suspend fun getTasById(id: Long): Task
+    suspend fun getTasById(id: Long): Task?
 
     @Query("SELECT * FROM task")
     suspend fun getAll(): List<Task>
@@ -24,7 +24,9 @@ interface TaskDao {
     suspend fun deleteById(vararg id: Long)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insert(vararg task: Task)
+    suspend fun insert(vararg task: Task): Array<Long>
 
+    @Update
+    suspend fun update(vararg task: Task)
 
 }

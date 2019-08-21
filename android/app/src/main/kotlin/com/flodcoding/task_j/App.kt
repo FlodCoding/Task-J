@@ -1,6 +1,6 @@
 package com.flodcoding.task_j
 
-import com.flodcoding.task_j.database.AppDatabase
+import com.flodcoding.task_j.data.database.AppDatabase
 import com.flodcoding.task_j.utils.PrefsUtil
 import io.flutter.app.FlutterApplication
 

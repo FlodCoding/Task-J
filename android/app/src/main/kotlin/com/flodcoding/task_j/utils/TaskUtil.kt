@@ -5,7 +5,7 @@ import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import com.flodcoding.task_j.applist.AppInfoTempBean
+import com.flodcoding.task_j.data.AppInfoTempBean
 
 /**
  * SimpleDes:
@@ -14,6 +14,8 @@ import com.flodcoding.task_j.applist.AppInfoTempBean
  * UseDes:
  */
 object TaskUtil {
+
+    private val Rule_ByDay = arrayOf("MO", "TU", "WE", "TH", "FR", "SA", "SU")
 
     //获取用户安装的APP
     fun getInstalledApplication(context: Context, needSysAPP: Boolean): List<ResolveInfo> {
@@ -66,41 +68,6 @@ object TaskUtil {
         return appInfoBeans
     }
 
-
-
-
-
-/*
-    fun jsonToTaskBean(arg: String): Task? {
-
-        var taskBean = Task(isStart = true,id = 0)
-        taskBean.appInfo.target = AppInfo("s",)
-        taskBean.time.target = Time(false,)
-
-        return
-
-           *//* return Task(id = (arg["id"] as Int).toLong(),
-                    appName = arg["appName"] as String,
-                    appIconBytes = arg["appIconBytes"] as ByteArray,
-                    repeat = arg["repeat"] as Boolean,
-                    repeatInWeek = arg["repeatInWeek"] as List<Boolean>,
-                    dateTime = Date(arg["dateTime"] as Long),
-                    isStart = arg["isStart"] as Boolean
-            )*//*
-
-    }
-
-    fun taskBeanTojson(taskBean: Task): Map<String, Any?> {
-        return mapOf(
-                "id" to taskBean.id,
-                "appName" to taskBean.appName,
-                "appIconBytes" to taskBean.appIconBytes,
-                "repeat" to taskBean.repeat,
-                "repeatInWeek" to taskBean.repeatInWeek,
-                "dateTime" to taskBean.dateTime.time,
-                "isStart" to taskBean.isStart
-        )
-    }*/
 
 
 }

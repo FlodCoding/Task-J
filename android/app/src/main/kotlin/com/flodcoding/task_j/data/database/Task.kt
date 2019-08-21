@@ -1,4 +1,4 @@
-package com.flodcoding.task_j.database
+package com.flodcoding.task_j.data.database
 
 import androidx.room.*
 import com.google.gson.Gson
@@ -39,12 +39,15 @@ data class AppInfo(var appName: String, var appIconBytes: ByteArray) {
 @Entity
 @TypeConverters(Converter::class)
 data class Time(
+        var calendarId: Long,
         var repeat: Boolean,
         var repeatInWeek: List<Boolean>,
-        val dateTime: Long
+        var dateTime: Long
+
 ) {
     fun toMap(): Map<String, Any> {
         return mapOf(
+                "calendarId" to calendarId,
                 "repeat" to repeat,
                 "repeatInWeek" to repeatInWeek,
                 "dateTime" to dateTime

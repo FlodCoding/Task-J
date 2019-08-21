@@ -1,4 +1,4 @@
-package com.flodcoding.task_j.database
+package com.flodcoding.task_j.data.database
 
 import android.content.Context
 import androidx.room.Database

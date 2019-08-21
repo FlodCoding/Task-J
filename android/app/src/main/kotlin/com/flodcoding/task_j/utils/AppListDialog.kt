@@ -1,4 +1,4 @@
-package com.flodcoding.task_j.applist
+package com.flodcoding.task_j.utils
 
 import android.app.Dialog
 import android.content.Context
@@ -18,7 +18,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.flodcoding.task_j.R
-import com.flodcoding.task_j.utils.TaskUtil
+import com.flodcoding.task_j.data.AppInfoTempBean
 import kotlinx.coroutines.*
 
 /**

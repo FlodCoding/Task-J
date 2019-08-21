@@ -1,4 +1,4 @@
-package com.flodcoding.task_j.applist
+package com.flodcoding.task_j.data
 
 import android.content.ComponentName
 import android.content.Intent

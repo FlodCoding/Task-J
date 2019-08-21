@@ -16,8 +16,6 @@ class TaskItemBean {
     appInfoBean = appInfo;
   }
 
-
-
   TaskItemBean.fromJson(Map<String, dynamic> jsonMap) {
     id = jsonMap['id'];
     isStart = jsonMap['isStart'];
@@ -48,9 +46,10 @@ class TimeBean {
 
   static String get strToday => "今天";
 
-
-  List<bool> repeatInWeek;
+  int calendarId;
   bool repeat;
+  List<bool> repeatInWeek;
+
   DateTime dateTime;
 
   TimeOfDay get timeOfDay => TimeOfDay.fromDateTime(dateTime);
@@ -59,14 +58,19 @@ class TimeBean {
     dateTime = DateTime(dateTime.year, dateTime.month, dateTime.day, timeOfDay.hour, timeOfDay.minute);
   }
 
-  TimeBean({@required DateTime dateTime, List<bool> repeatInWeek, bool repeat = false}) {
+  TimeBean({
+    int calendarId = 0,
+    @required DateTime dateTime,
+    List<bool> repeatInWeek,
+    bool repeat = false,
+  }) {
     if (repeatInWeek == null) repeatInWeek = List.generate(7, (index) => false);
+
+    this.calendarId = calendarId;
     this.repeatInWeek = repeatInWeek;
     this.repeat = repeat;
     this.dateTime = dateTime;
   }
-
-
 
   String repeatInWeekStr() {
     repeat = repeatInWeek.any((element) => element);
@@ -103,6 +107,7 @@ class TimeBean {
   }
 
   TimeBean.fromJson(Map<String, dynamic> jsonMap) {
+    calendarId = jsonMap['calendarId'];
     repeat = jsonMap['repeat'];
     repeatInWeek = List.castFrom(jsonMap['repeatInWeek']);
     dateTime = DateTime.fromMillisecondsSinceEpoch(jsonMap['dateTime']);
@@ -110,6 +115,7 @@ class TimeBean {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
+    data['calendarId'] = calendarId;
     data['repeat'] = repeat;
     data['repeatInWeek'] = repeatInWeek;
     data['dateTime'] = dateTime.millisecondsSinceEpoch;

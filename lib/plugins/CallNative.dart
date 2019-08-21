@@ -13,6 +13,16 @@ class CallNative {
     }
   }
 
+  static Future<TaskItemBean> addTask(TaskItemBean taskBean) async {
+    var map = taskBean.toJson();
+    Map result = await _platform.invokeMethod('addTask', map);
+    if (result != null) {
+      return TaskItemBean.fromJson(Map<String, dynamic>.from(result));
+    }
+
+    return null;
+  }
+
   static updateTask(TaskItemBean taskBean) async {
     var map = taskBean.toJson();
     _platform.invokeMethod('updateTask', map);
