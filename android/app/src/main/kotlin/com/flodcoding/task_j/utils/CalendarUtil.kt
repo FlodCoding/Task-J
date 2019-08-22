@@ -4,6 +4,7 @@ import android.content.ContentUris
 import android.content.ContentValues
 import android.content.Context
 import android.provider.CalendarContract
+import android.util.Log
 import com.flodcoding.task_j.data.database.Task
 import java.util.*
 
@@ -59,6 +60,7 @@ object CalendarUtil {
 
         contentValues.put(CalendarContract.Events.DTSTART, task.time.dateTime)
         contentValues.put(CalendarContract.Events.DTEND, task.time.dateTime + 600000)
+        Log.d("start_time", "buildEventContentValues:${task.time.dateTime}")
         if (task.time.repeat) {
             //重复规则
             contentValues.put(CalendarContract.Events.RRULE, getFreqRule(task.time.repeatInWeek))

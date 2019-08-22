@@ -1,5 +1,6 @@
 package com.flodcoding.task_j.utils
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
@@ -68,6 +69,13 @@ object TaskUtil {
         return appInfoBeans
     }
 
-
+    fun launchAppIntent(launchPackage: String, launchName: String): Intent {
+        val intent = Intent(Intent.ACTION_MAIN)
+        intent.addCategory(Intent.CATEGORY_LAUNCHER)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val cn = ComponentName(launchPackage, launchName)
+        intent.component = cn
+        return intent
+    }
 
 }

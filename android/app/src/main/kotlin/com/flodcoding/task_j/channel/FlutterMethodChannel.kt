@@ -29,10 +29,10 @@ object FlutterMethodChannel {
                 when {
                     call.method == "showInstallAppList" ->
                         AppListDialog(object : AppListDialog.OnAppSelectedListener {
-                            override fun onSelected(infoTemp: AppInfoTempBean?) {
-                                if (infoTemp != null) {
-                                    result.success(AppInfo(infoTemp.appName, infoTemp.iconBytes
-                                            ?: ByteArray(0), infoTemp.info.name, infoTemp.info.packageName).toMap())
+                            override fun onSelected(appInfoTempBean: AppInfoTempBean?) {
+                                if (appInfoTempBean != null) {
+                                    result.success(AppInfo(appInfoTempBean.appName, appInfoTempBean.iconBytes
+                                            ?: ByteArray(0), appInfoTempBean.info.name, appInfoTempBean.info.packageName).toMap())
                                 }
                             }
                         }).show(fragmentActivity.supportFragmentManager)
@@ -67,7 +67,7 @@ object FlutterMethodChannel {
                     }
                     call.method == "deleteTask" -> {
                         val id = (call.arguments as Map<*, *>)["id"] as Number
-                        val task = TaskModel.query(id.toLong())
+                        val task = TaskModel.queryById(id.toLong())
 
                         if (task != null) {
                             CalendarUtil.deleteTask(fragmentActivity, task.time.calendarId)
