@@ -29,10 +29,10 @@ object FlutterMethodChannel {
                 when {
                     call.method == "showInstallAppList" ->
                         AppListDialog(object : AppListDialog.OnAppSelectedListener {
-                            override fun onSelected(appInfoTempBean: AppInfoTempBean?) {
-                                if (appInfoTempBean != null) {
-                                    result.success(AppInfo(appInfoTempBean.appName, appInfoTempBean.iconBytes
-                                            ?: ByteArray(0)).toMap())
+                            override fun onSelected(infoTemp: AppInfoTempBean?) {
+                                if (infoTemp != null) {
+                                    result.success(AppInfo(infoTemp.appName, infoTemp.iconBytes
+                                            ?: ByteArray(0), infoTemp.info.name, infoTemp.info.packageName).toMap())
                                 }
                             }
                         }).show(fragmentActivity.supportFragmentManager)
@@ -51,8 +51,8 @@ object FlutterMethodChannel {
                         task.time.calendarId = eventId.toLong()
 
                         //放到数据库中
-                        val  id = TaskModel.insert(task)
-                        task.id =id
+                        val id = TaskModel.insert(task)
+                        task.id = id
 
                         //返回给UI端
 

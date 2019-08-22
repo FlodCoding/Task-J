@@ -5,20 +5,20 @@ import 'package:intl/intl.dart';
 
 class TaskItemBean {
   int id;
-  bool isStart;
+  bool enable;
   AppInfoBean appInfoBean;
   TimeBean timeBean;
 
   TaskItemBean({int id = 0, @required TimeBean time, @required AppInfoBean appInfo, bool start = true}) {
     this.id = id;
-    isStart = start;
+    enable = start;
     timeBean = time;
     appInfoBean = appInfo;
   }
 
   TaskItemBean.fromJson(Map<String, dynamic> jsonMap) {
     id = jsonMap['id'];
-    isStart = jsonMap['isStart'];
+    enable = jsonMap['enable'];
     appInfoBean =
         jsonMap['appInfo'] != null ? AppInfoBean.fromJson(Map<String, dynamic>.from(jsonMap['appInfo'])) : null;
     timeBean = jsonMap['time'] != null ? TimeBean.fromJson(Map<String, dynamic>.from(jsonMap['time'])) : null;
@@ -27,7 +27,7 @@ class TaskItemBean {
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['id'] = id;
-    data['isStart'] = isStart;
+    data['enable'] = enable;
     if (timeBean != null) {
       data['time'] = timeBean.toJson();
     }
@@ -126,21 +126,29 @@ class TimeBean {
 class AppInfoBean {
   String appName;
   Uint8List appIconBytes;
+  String launchName;
+  String launchPackage;
 
   AppInfoBean(
     this.appName,
     this.appIconBytes,
+    this.launchName,
+    this.launchPackage,
   );
 
   AppInfoBean.fromJson(Map<String, dynamic> jsonMap) {
     appName = jsonMap['appName'];
     appIconBytes = Uint8List.fromList(jsonMap['appIconBytes']);
+    launchName = jsonMap['launchName'];
+    launchPackage = jsonMap['launchPackage'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data['appName'] = appName;
     data['appIconBytes'] = appIconBytes;
+    data['launchName'] = launchName;
+    data['launchPackage'] = launchPackage;
     return data;
   }
 }

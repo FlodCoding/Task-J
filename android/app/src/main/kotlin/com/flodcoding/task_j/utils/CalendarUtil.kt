@@ -19,16 +19,21 @@ object CalendarUtil {
     private val Rule_ByDay = arrayOf("MO", "TU", "WE", "TH", "FR", "SA", "SU")
 
     fun insertTask(context: Context, task: Task): String? {
-        val contentValues = buildContentValues(task)
+        val eventValues = buildEventContentValues(task)
+        val cr = context.contentResolver
         //插入日历中
-        val eventId = context.contentResolver.insert(CalendarContract.Events.CONTENT_URI, contentValues)?.lastPathSegment
+        val eventId = cr.insert(CalendarContract.Events.CONTENT_URI, eventValues)?.lastPathSegment
 
-        return eventId ?: return null
+        eventId ?: return null
+
+        val remindersValues = buildReminderContentValues(eventId)
+        cr.insert(CalendarContract.Reminders.CONTENT_URI, remindersValues)
+        return eventId
     }
 
 
     fun updateTask(context: Context, task: Task) {
-        val contentValues = buildContentValues(task)
+        val contentValues = buildEventContentValues(task)
 
         context.contentResolver.update(ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI, task.time.calendarId),
                 contentValues, null, null)
@@ -41,13 +46,16 @@ object CalendarUtil {
     }
 
 
-    private fun buildContentValues(task: Task): ContentValues {
+    private fun buildEventContentValues(task: Task): ContentValues {
         val contentValues = ContentValues()
         contentValues.put(CalendarContract.Events.CALENDAR_ID, 1)
+
+        //闹钟无效
+        //contentValues.put(CalendarContract.Events.HAS_ALARM, true)
         contentValues.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
 
         contentValues.put(CalendarContract.Events.TITLE, "打开 " + task.appInfo.appName)
-        contentValues.put(CalendarContract.Events.DESCRIPTION, "此事件用来触发打开软件，请勿删除")
+        contentValues.put(CalendarContract.Events.DESCRIPTION, "此事件用来触发打开软件，请勿修改或删除")
 
         contentValues.put(CalendarContract.Events.DTSTART, task.time.dateTime)
         contentValues.put(CalendarContract.Events.DTEND, task.time.dateTime + 600000)
@@ -55,6 +63,15 @@ object CalendarUtil {
             //重复规则
             contentValues.put(CalendarContract.Events.RRULE, getFreqRule(task.time.repeatInWeek))
         }
+
+        return contentValues
+    }
+
+    private fun buildReminderContentValues(eventId: String): ContentValues {
+        val contentValues = ContentValues()
+
+        contentValues.put(CalendarContract.Reminders.EVENT_ID,eventId)
+        contentValues.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT)
 
         return contentValues
     }

@@ -12,13 +12,13 @@ import com.google.gson.reflect.TypeToken
  * UseDes:
  */
 @Entity
-data class Task(@PrimaryKey(autoGenerate = true) var id: Long = 0, var isStart: Boolean, @Embedded var appInfo: AppInfo, @Embedded var time: Time) {
+data class Task(@PrimaryKey(autoGenerate = true) var id: Long = 0, var enable: Boolean, @Embedded var appInfo: AppInfo, @Embedded var time: Time) {
 
 
     fun toMap(): Map<String, Any> {
         return mapOf(
                 "id" to id,
-                "isStart" to isStart,
+                "enable" to enable,
                 "appInfo" to appInfo.toMap(),
                 "time" to time.toMap()
         )
@@ -27,14 +27,17 @@ data class Task(@PrimaryKey(autoGenerate = true) var id: Long = 0, var isStart: 
 
 @Suppress("ArrayInDataClass")
 @Entity
-data class AppInfo(var appName: String, var appIconBytes: ByteArray) {
+data class AppInfo(var appName: String, var appIconBytes: ByteArray, var launchName: String, var launchPackage: String) {
     fun toMap(): Map<String, Any> {
         return mapOf(
                 "appName" to appName,
-                "appIconBytes" to appIconBytes
+                "appIconBytes" to appIconBytes,
+                "launchName" to launchName,
+                "launchPackage" to launchPackage
         )
     }
 }
+
 
 @Entity
 @TypeConverters(Converter::class)

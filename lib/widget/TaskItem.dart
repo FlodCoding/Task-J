@@ -80,11 +80,11 @@ class _TaskItemState extends State<TaskItem> {
                         : Transform.scale(
                             scale: 0.7,
                             child: CupertinoSwitch(
-                              value: task.isStart,
+                              value: task.enable,
                               activeColor: Colors.blue,
                               onChanged: (bool) {
                                 setState(() {
-                                  widget.taskBean.isStart = bool;
+                                  widget.taskBean.enable = bool;
                                   widget.onUpdate(widget.index, widget.taskBean);
                                 });
                               },
