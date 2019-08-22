@@ -27,7 +27,7 @@ object CalendarUtil {
         eventId ?: return null
 
         val remindersValues = buildReminderContentValues(eventId)
-        cr.insert(CalendarContract.Reminders.CONTENT_URI, remindersValues)
+        val id = cr.insert(CalendarContract.Reminders.CONTENT_URI, remindersValues)
         return eventId
     }
 

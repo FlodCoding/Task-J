@@ -43,7 +43,7 @@ class CalendarEventReceiver : BroadcastReceiver() {
     private fun queryTask(context: Context, alertTime: String): Task? {
         val selection = CalendarContract.CalendarAlerts.ALARM_TIME + "=?"
 
-
+        //通过提醒的时间查询到相应的EventId
         val cursor = context.contentResolver.query(CalendarContract.CalendarAlerts.CONTENT_URI_BY_INSTANCE, arrayOf(CalendarContract.CalendarAlerts.EVENT_ID), selection, arrayOf(alertTime), null)
         cursor ?: return null
 
