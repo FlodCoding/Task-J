@@ -1,7 +1,5 @@
 package com.flodcoding.task_j.data
 
-import android.content.ComponentName
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
@@ -16,15 +14,6 @@ import java.io.ByteArrayOutputStream
  */
 class AppInfoTempBean(val appIcon: Drawable?, val appName: String, val info: ActivityInfo) {
 
-
-    internal val startIntent: Intent
-        get() {
-            val intent = Intent(Intent.ACTION_MAIN)
-            intent.addCategory(Intent.CATEGORY_LAUNCHER)
-            val cn = ComponentName(info.packageName, info.name)
-            intent.component = cn
-            return intent
-        }
 
 
     internal val iconBytes: ByteArray?

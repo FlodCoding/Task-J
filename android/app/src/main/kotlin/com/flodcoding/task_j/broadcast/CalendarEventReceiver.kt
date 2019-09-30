@@ -3,13 +3,11 @@ package com.flodcoding.task_j.broadcast
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.provider.CalendarContract
+import android.util.Log
 import android.widget.Toast
-import com.flodcoding.task_j.data.database.Task
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.flodcoding.task_j.data.database.TaskModel
+import com.flodcoding.task_j.utils.TaskUtil
+import kotlinx.coroutines.*
 
 
 /**
@@ -25,14 +23,22 @@ class CalendarEventReceiver : BroadcastReceiver() {
         context ?: return
         intent ?: return
 
-        val alertTime = intent.data?.lastPathSegment ?: return
+        val startTime = intent.data?.lastPathSegment?.toLong() ?: return
+        Log.d("start_time", "BroadcastReceiver:$startTime")
 
-        queryTask(context, alertTime)
+        runBlocking {
+            val task = TaskModel.queryByTime(startTime)
+            if (task != null) {
+                context.startActivity(TaskUtil.launchAppIntent(task.appInfo.launchPackage, task.appInfo.launchName))
+            }
+
+        }
+
 
 
         GlobalScope.launch {
             withContext(Dispatchers.Main) {
-                Toast.makeText(context!!.applicationContext, "我活了", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context.applicationContext, "我活了", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -40,21 +46,17 @@ class CalendarEventReceiver : BroadcastReceiver() {
     }
 
 
-    private fun queryTask(context: Context, alertTime: String): Task? {
-        val selection = CalendarContract.CalendarAlerts.ALARM_TIME + "=?"
-
-        //通过提醒的时间查询到相应的EventId
-        val cursor = context.contentResolver.query(CalendarContract.CalendarAlerts.CONTENT_URI_BY_INSTANCE, arrayOf(CalendarContract.CalendarAlerts.EVENT_ID), selection, arrayOf(alertTime), null)
-        cursor ?: return null
-
-        while (cursor.moveToNext()){
-
-        }
 
 
-        cursor.close()
+    /* private fun queryEventId(context: Context, alertTime: String){
+         val selection = CalendarContract.CalendarAlerts.ALARM_TIME + "=?"
 
-        return null
+         //通过提醒的时间查询到相应的EventId
+         val cursor = context.contentResolver.query(CalendarContract.CalendarAlerts.CONTENT_URI_BY_INSTANCE, arrayOf(CalendarContract.CalendarAlerts.EVENT_ID), selection, arrayOf(alertTime), null)
+         cursor ?: return
 
-    }
+         while (cursor.moveToNext()) {
+
+         }
+     }*/
 }

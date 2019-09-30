@@ -67,7 +67,7 @@ object FlutterMethodChannel {
                     }
                     call.method == "deleteTask" -> {
                         val id = (call.arguments as Map<*, *>)["id"] as Number
-                        val task = TaskModel.query(id.toLong())
+                        val task = TaskModel.queryById(id.toLong())
 
                         if (task != null) {
                             CalendarUtil.deleteTask(fragmentActivity, task.time.calendarId)
