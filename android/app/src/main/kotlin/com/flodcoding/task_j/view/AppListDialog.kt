@@ -1,4 +1,4 @@
-package com.flodcoding.task_j.utils
+package com.flodcoding.task_j.view
 
 import android.app.Dialog
 import android.content.Context
@@ -19,13 +19,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.flodcoding.task_j.R
 import com.flodcoding.task_j.data.AppInfoTempBean
+import com.flodcoding.task_j.utils.TaskUtil
 import kotlinx.coroutines.*
 
 /**
  * SimpleDes:
  * Creator: Flood
  * Date: 2019-08-06
- * UseDes:
+ * UseDes: TODO 搜索功能
  */
 class AppListDialog constructor(private val onAppSelectedListener: OnAppSelectedListener) : DialogFragment(), CoroutineScope by MainScope() {
     private lateinit var mAdapter: Adapter
@@ -44,10 +45,9 @@ class AppListDialog constructor(private val onAppSelectedListener: OnAppSelected
         val display = wm.defaultDisplay
         val point = Point()
         display.getSize(point)
-        if (dialog != null) {
-            dialog.setCanceledOnTouchOutside(true)
-            dialog.window?.setLayout((point.x * 0.9).toInt(), (point.y * 0.9).toInt())
-        }
+
+        dialog?.setCanceledOnTouchOutside(true)
+        dialog?.window?.setLayout((point.x * 0.9).toInt(), (point.y * 0.9).toInt())
 
 
     }
@@ -63,7 +63,6 @@ class AppListDialog constructor(private val onAppSelectedListener: OnAppSelected
         }
 
     }
-
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -129,7 +128,8 @@ class AppListDialog constructor(private val onAppSelectedListener: OnAppSelected
         cancel()
     }
 
-    override fun onCancel(dialog: DialogInterface?) {
+
+    override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
         onAppSelectedListener.onSelected(null)
     }

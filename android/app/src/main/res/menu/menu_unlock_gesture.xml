@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="HardcodedText,AlwaysShowAction">
+
+    <item
+        android:id="@+id/menu_reset_gesture"
+        android:icon="@drawable/ic_replay_black_24dp"
+        android:title="重置手势"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_reset_bg"
+        android:icon="@drawable/ic_image_black_24dp"
+        android:title="重设背景"
+        app:showAsAction="always" />
+
+
+    <item
+        android:id="@+id/menu_done"
+        android:icon="@drawable/ic_done_black_24dp"
+        android:title="完成"
+        app:showAsAction="always" />
+</menu>

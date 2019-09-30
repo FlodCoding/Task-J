@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.flodcoding.task_j">
 
@@ -10,6 +11,7 @@
         android:name=".App"
         android:icon="@mipmap/ic_launcher"
         android:label="任务姬">
+        <activity android:name=".view.gesture.UnlockGestureActivity"/>
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
@@ -19,25 +21,40 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
-                <action android:name="android.intent.action.VIEW"/>
+
+                <action android:name="android.intent.action.VIEW" />
             </intent-filter>
+
             <meta-data
                 android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
                 android:value="true" />
         </activity>
+
         <receiver
             android:name=".broadcast.CalendarEventReceiver"
             android:exported="true">
-
             <intent-filter>
                 <action android:name="android.intent.action.EVENT_REMINDER" />
+
                 <data android:scheme="content" />
             </intent-filter>
-
-
         </receiver>
-    </application>
 
+
+        <service
+            android:name=".service.GestureAccessibility"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/gesture_accessibility" />
+        </service>
+        <service android:name=".service.GestureRecordService" />
+    </application>
 
 </manifest>

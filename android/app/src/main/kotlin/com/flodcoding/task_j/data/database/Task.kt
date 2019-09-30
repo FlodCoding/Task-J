@@ -40,7 +40,7 @@ data class AppInfo(var appName: String, var appIconBytes: ByteArray, var launchN
 
 
 @Entity
-@TypeConverters(Converter::class)
+@TypeConverters(TimeConverter::class)
 data class Time(
         var calendarId: Long,
         var repeat: Boolean,
@@ -58,7 +58,7 @@ data class Time(
     }
 }
 
-class Converter {
+class TimeConverter {
 
     @TypeConverter
     fun listBooleanToString(obj: List<Boolean>): String {

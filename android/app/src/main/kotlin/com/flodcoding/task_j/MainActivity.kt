@@ -1,7 +1,7 @@
 package com.flodcoding.task_j
 
 import android.os.Bundle
-import com.flodcoding.task_j.channel.FlutterMethodChannel
+import com.flodcoding.task_j.data.channel.FlutterMethodChannel
 import io.flutter.plugins.GeneratedPluginRegistrant
 
 

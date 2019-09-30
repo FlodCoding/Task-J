@@ -1,13 +1,13 @@
-package com.flodcoding.task_j.channel
+package com.flodcoding.task_j.data.channel
 
 import com.flodcoding.task_j.FlutterFragmentActivity
 import com.flodcoding.task_j.data.AppInfoTempBean
 import com.flodcoding.task_j.data.database.AppInfo
 import com.flodcoding.task_j.data.database.Task
 import com.flodcoding.task_j.data.database.TaskModel
-import com.flodcoding.task_j.utils.AppListDialog
 import com.flodcoding.task_j.utils.CalendarUtil
 import com.flodcoding.task_j.utils.JsonUtil
+import com.flodcoding.task_j.view.AppListDialog
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.runBlocking
 
@@ -29,10 +29,10 @@ object FlutterMethodChannel {
                 when {
                     call.method == "showInstallAppList" ->
                         AppListDialog(object : AppListDialog.OnAppSelectedListener {
-                            override fun onSelected(infoTemp: AppInfoTempBean?) {
-                                if (infoTemp != null) {
-                                    result.success(AppInfo(infoTemp.appName, infoTemp.iconBytes
-                                            ?: ByteArray(0), infoTemp.info.name, infoTemp.info.packageName).toMap())
+                            override fun onSelected(appInfoTempBean: AppInfoTempBean?) {
+                                if (appInfoTempBean != null) {
+                                    result.success(AppInfo(appInfoTempBean.appName, appInfoTempBean.iconBytes
+                                            ?: ByteArray(0), appInfoTempBean.info.name, appInfoTempBean.info.packageName).toMap())
                                 }
                             }
                         }).show(fragmentActivity.supportFragmentManager)
