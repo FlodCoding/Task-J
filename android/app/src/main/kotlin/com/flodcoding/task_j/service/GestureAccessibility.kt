@@ -21,7 +21,7 @@ import kotlinx.coroutines.runBlocking
  *
  */
 class GestureAccessibility : AccessibilityService(), GestureRecordService.OnGestureRecordServiceListener {
-
+    
     companion object {
         private const val KEY_IS_RECORD = "KEY_IS_RECORD"
 

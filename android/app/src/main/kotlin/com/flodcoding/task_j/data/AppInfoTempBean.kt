@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import java.io.ByteArrayOutputStream
+import java.io.Serializable
 
 /**
  * SimpleDes:
@@ -12,7 +13,7 @@ import java.io.ByteArrayOutputStream
  * Date: 2019-08-06
  * UseDes:
  */
-class AppInfoTempBean(val appIcon: Drawable?, val appName: String, val info: ActivityInfo) {
+class AppInfoTempBean(val appIcon: Drawable?, val appName: String, val info: ActivityInfo) :Serializable{
 
 
 

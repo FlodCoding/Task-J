@@ -16,8 +16,6 @@ import com.flodcoding.task_j.data.AppInfoTempBean
  */
 object TaskUtil {
 
-    private val Rule_ByDay = arrayOf("MO", "TU", "WE", "TH", "FR", "SA", "SU")
-
     //获取用户安装的APP
     fun getInstalledApplication(context: Context, needSysAPP: Boolean): List<ResolveInfo> {
         val packageManager = context.packageManager

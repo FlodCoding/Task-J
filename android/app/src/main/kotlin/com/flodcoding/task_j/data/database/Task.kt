@@ -1,6 +1,9 @@
 package com.flodcoding.task_j.data.database
 
 import androidx.room.*
+import com.flod.view.GestureInfo
+import com.flodcoding.task_j.data.GestureInfoBundle
+import com.flodcoding.task_j.utils.ParcelableUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -12,7 +15,15 @@ import com.google.gson.reflect.TypeToken
  * UseDes:
  */
 @Entity
-data class Task(@PrimaryKey(autoGenerate = true) var id: Long = 0, var enable: Boolean, @Embedded var appInfo: AppInfo, @Embedded var time: Time) {
+data class Task(
+        @PrimaryKey(autoGenerate = true)
+        var id: Long = 0, var enable: Boolean,
+        @Embedded
+        var appInfo: AppInfo,
+        @Embedded
+        var time: Time,
+        var gestures:GestureInfoBundle
+        ) {
 
 
     fun toMap(): Map<String, Any> {
@@ -45,9 +56,7 @@ data class Time(
         var calendarId: Long,
         var repeat: Boolean,
         var repeatInWeek: List<Boolean>,
-        var dateTime: Long
-
-) {
+        var dateTime: Long) {
     fun toMap(): Map<String, Any> {
         return mapOf(
                 "calendarId" to calendarId,
@@ -69,5 +78,17 @@ class TimeConverter {
     fun jsonToListBoolean(json: String): List<Boolean> {
         val type = object : TypeToken<List<Boolean>>() {}.type
         return Gson().fromJson(json, type)
+    }
+}
+
+class GestureInfoConverter{
+    @TypeConverter
+    fun GestureInfoToBytes(gestures: List<GestureInfo>):ByteArray{
+
+        for (gesture in gestures) {
+            val marshall = ParcelableUtil.marshall(gesture)
+
+        }
+
     }
 }

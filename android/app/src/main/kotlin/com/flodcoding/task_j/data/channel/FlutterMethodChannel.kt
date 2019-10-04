@@ -21,6 +21,7 @@ import kotlinx.coroutines.runBlocking
 object FlutterMethodChannel {
     private const val CHANNEL = "com.flod.task_j.android"
 
+
     fun registerMethodCallBack(fragmentActivity: FlutterFragmentActivity) {
 
         MethodChannel(fragmentActivity.flutterView, CHANNEL).setMethodCallHandler { call, result ->
@@ -41,6 +42,11 @@ object FlutterMethodChannel {
                         val tasks = TaskModel.getTaskList()
                         result.success(tasks)
                     }
+
+                    call.method == "addGesture" ->{
+
+                    }
+
                     call.method == "addTask" -> {
                         val task = JsonUtil.mapToObj(call.arguments as Map<*, *>, Task::class.java)
                                 ?: return@runBlocking
