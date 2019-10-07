@@ -1,9 +1,6 @@
 package com.flodcoding.task_j.data.database
 
 import androidx.room.*
-import com.flod.view.GestureInfo
-import com.flodcoding.task_j.data.GestureInfoBundle
-import com.flodcoding.task_j.utils.ParcelableUtil
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -15,6 +12,8 @@ import com.google.gson.reflect.TypeToken
  * UseDes:
  */
 @Entity
+@Suppress("ArrayInDataClass")
+@TypeConverters(Converter::class)
 data class Task(
         @PrimaryKey(autoGenerate = true)
         var id: Long = 0, var enable: Boolean,
@@ -22,8 +21,7 @@ data class Task(
         var appInfo: AppInfo,
         @Embedded
         var time: Time,
-        var gestures:GestureInfoBundle
-        ) {
+        var gestures: ByteArray) {
 
 
     fun toMap(): Map<String, Any> {
@@ -31,7 +29,9 @@ data class Task(
                 "id" to id,
                 "enable" to enable,
                 "appInfo" to appInfo.toMap(),
-                "time" to time.toMap()
+                "time" to time.toMap(),
+                "gestures" to gestures
+
         )
     }
 }
@@ -51,7 +51,6 @@ data class AppInfo(var appName: String, var appIconBytes: ByteArray, var launchN
 
 
 @Entity
-@TypeConverters(TimeConverter::class)
 data class Time(
         var calendarId: Long,
         var repeat: Boolean,
@@ -67,7 +66,7 @@ data class Time(
     }
 }
 
-class TimeConverter {
+class Converter {
 
     @TypeConverter
     fun listBooleanToString(obj: List<Boolean>): String {
@@ -79,16 +78,14 @@ class TimeConverter {
         val type = object : TypeToken<List<Boolean>>() {}.type
         return Gson().fromJson(json, type)
     }
-}
 
-class GestureInfoConverter{
-    @TypeConverter
-    fun GestureInfoToBytes(gestures: List<GestureInfo>):ByteArray{
-
-        for (gesture in gestures) {
-            val marshall = ParcelableUtil.marshall(gesture)
-
-        }
-
+  /*  @TypeConverter
+    fun parcelToBytes(gestures: GestureInfoBundle): ByteArray {
+        return ParcelableUtil.marshall(gestures)
     }
+
+    @TypeConverter
+    fun bytesToParcel(bytes: ByteArray): GestureInfoBundle {
+        return ParcelableUtil.unmarshall(bytes, GestureInfoBundle.CREATOR)
+    }*/
 }
