@@ -164,7 +164,7 @@ class TaskDetailPageState extends State<TaskDetailPage> {
             Padding(padding:EdgeInsets.only(left: 20),
               child: FlatButton(child: Text("录制脚本",style: TextStyle(fontSize: 20),),
                 onPressed: () {
-
+                 CallNative.addGesture();
 
                 },),)
           ],

@@ -1,10 +1,14 @@
 package com.flodcoding.task_j.data.channel
 
+import android.util.Log
+import com.flod.view.GestureInfo
 import com.flodcoding.task_j.FlutterFragmentActivity
 import com.flodcoding.task_j.data.AppInfoTempBean
 import com.flodcoding.task_j.data.database.AppInfo
 import com.flodcoding.task_j.data.database.Task
 import com.flodcoding.task_j.data.database.TaskModel
+import com.flodcoding.task_j.service.GestureAccessibility
+import com.flodcoding.task_j.service.GestureRecorderWatcher
 import com.flodcoding.task_j.utils.CalendarUtil
 import com.flodcoding.task_j.utils.JsonUtil
 import com.flodcoding.task_j.view.AppListDialog
@@ -43,8 +47,31 @@ object FlutterMethodChannel {
                         result.success(tasks)
                     }
 
-                    call.method == "addGesture" ->{
+                    call.method == "addGesture" -> {
 
+                        GestureAccessibility.startServiceWithRecord(fragmentActivity)
+
+                        GestureAccessibility.INSTANCE?.setGestureRecorderWatcher(
+                                object : GestureRecorderWatcher.Listener {
+                                    override fun onStartRecord() {
+
+                                        Log.d("GestureAccessibility","onStartRecord")
+                                    }
+
+                                    override fun onRecording(gestureInfo: GestureInfo) {
+                                        Log.d("GestureAccessibility","onRecording")
+                                    }
+
+                                    override fun onStopRecord(gestureInfoList: ArrayList<GestureInfo>) {
+                                        Log.d("GestureAccessibility","onStopRecord")
+                                    }
+
+                                    override fun onCancelRecord() {
+                                        Log.d("GestureAccessibility","onCancelRecord")
+                                    }
+
+
+                                })
                     }
 
                     call.method == "addTask" -> {
@@ -61,7 +88,6 @@ object FlutterMethodChannel {
                         task.id = id
 
                         //返回给UI端
-
                         result.success(task.toMap())
                     }
                     call.method == "updateTask" -> {
@@ -87,5 +113,12 @@ object FlutterMethodChannel {
 
 
         }
+    }
+
+
+    fun EventChannelCall() {
+
+        //EventChannel()
+
     }
 }

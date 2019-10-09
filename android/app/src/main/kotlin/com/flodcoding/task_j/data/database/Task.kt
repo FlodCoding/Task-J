@@ -21,10 +21,10 @@ data class Task(
         var appInfo: AppInfo,
         @Embedded
         var time: Time,
-        var gestures: ByteArray) {
+        var gestures: ByteArray?) {
 
 
-    fun toMap(): Map<String, Any> {
+    fun toMap(): Map<String, Any?> {
         return mapOf(
                 "id" to id,
                 "enable" to enable,
@@ -79,13 +79,13 @@ class Converter {
         return Gson().fromJson(json, type)
     }
 
-  /*  @TypeConverter
-    fun parcelToBytes(gestures: GestureInfoBundle): ByteArray {
-        return ParcelableUtil.marshall(gestures)
-    }
-
-    @TypeConverter
-    fun bytesToParcel(bytes: ByteArray): GestureInfoBundle {
-        return ParcelableUtil.unmarshall(bytes, GestureInfoBundle.CREATOR)
-    }*/
+    /*  @TypeConverter
+      fun parcelToBytes(gestures: GestureInfoBundle): ByteArray {
+          return ParcelableUtil.marshall(gestures)
+      }
+  
+      @TypeConverter
+      fun bytesToParcel(bytes: ByteArray): GestureInfoBundle {
+          return ParcelableUtil.unmarshall(bytes, GestureInfoBundle.CREATOR)
+      }*/
 }

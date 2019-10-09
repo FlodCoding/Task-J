@@ -3,9 +3,11 @@
     package="com.flodcoding.task_j">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_CALENDAR" />
     <uses-permission android:name="android.permission.WRITE_CALENDAR" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".App"
@@ -54,7 +56,7 @@
                 android:name="android.accessibilityservice"
                 android:resource="@xml/gesture_accessibility" />
         </service>
-        <service android:name=".service.GestureRecordService" />
+        <service android:name=".service.GestureRecorderService" />
     </application>
 
 </manifest>

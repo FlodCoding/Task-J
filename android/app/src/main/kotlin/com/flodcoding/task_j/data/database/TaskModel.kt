@@ -8,7 +8,7 @@ package com.flodcoding.task_j.data.database
  *
  */
 object TaskModel {
-    suspend fun getTaskList(): List<Map<String, Any>> {
+    suspend fun getTaskList(): List<Map<String, Any?>> {
         return AppDatabase.getInstance().taskDao().getAll().map { it.toMap() }.toList()
     }
 

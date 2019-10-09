@@ -20,10 +20,19 @@ import kotlinx.coroutines.runBlocking
  * UseDes:
  *
  */
-class GestureAccessibility : AccessibilityService(), GestureRecordService.OnGestureRecordServiceListener {
-    
+class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.Listener {
+
+    private var mGestureRecorderWatcher: GestureRecorderWatcher.Listener? = null
+    fun setGestureRecorderWatcher(watcher: GestureRecorderWatcher.Listener) {
+        mGestureRecorderWatcher = watcher
+    }
+
     companion object {
         private const val KEY_IS_RECORD = "KEY_IS_RECORD"
+
+        //由于onBind 在AccessibilityService中被设置为final，无法使用bindService与外界通信
+        //目前就先单例这个Service，通过接口将数据回调出去
+        var INSTANCE: GestureAccessibility? = null
 
         fun startGestures(context: Context, gestures: ArrayList<GestureInfo>) {
             val intent = Intent(context, GestureAccessibility::class.java)
@@ -36,6 +45,16 @@ class GestureAccessibility : AccessibilityService(), GestureRecordService.OnGest
             intent.putExtra(KEY_IS_RECORD, true)
             context.startService(intent)
         }
+    }
+
+    override fun onServiceConnected() {
+        super.onServiceConnected()
+        INSTANCE = this
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
+        INSTANCE = null
+        return super.onUnbind(intent)
     }
 
 
@@ -97,11 +116,11 @@ class GestureAccessibility : AccessibilityService(), GestureRecordService.OnGest
             if (stroke.index == GestureDescription.getMaxStrokeCount() - 1)
                 break
             val description =
-                GestureDescription.StrokeDescription(
-                    stroke.value.path,
-                    if (immediately) 0 else gestureInfo.delayTime,
-                    duration
-                )
+                    GestureDescription.StrokeDescription(
+                            stroke.value.path,
+                            if (immediately) 0 else gestureInfo.delayTime,
+                            duration
+                    )
 
             builder.addStroke(description)
         }
@@ -111,7 +130,7 @@ class GestureAccessibility : AccessibilityService(), GestureRecordService.OnGest
 
 
     //=============================== RecordService Part===========================================//
-    private var mRecordServiceBinder: GestureRecordService.IGestureRecordBinder? = null
+    private var mRecordServiceBinder: GestureRecorderService.IGestureRecordBinder? = null
     private val mServiceConnection = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
             Log.d("GestureAccessibility", "onServiceDisconnected")
@@ -123,7 +142,7 @@ class GestureAccessibility : AccessibilityService(), GestureRecordService.OnGest
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             Log.d("GestureAccessibility", "onServiceConnected")
-            if (service is GestureRecordService.IGestureRecordBinder) {
+            if (service is GestureRecorderService.IGestureRecordBinder) {
                 service.setOnGestureRecordedListener(this@GestureAccessibility)
                 mRecordServiceBinder = service
 
@@ -134,22 +153,23 @@ class GestureAccessibility : AccessibilityService(), GestureRecordService.OnGest
 
     private fun bindGestureRecordService() {
         bindService(
-            Intent(this, GestureRecordService::class.java),
-            mServiceConnection,
-            Context.BIND_AUTO_CREATE
+                Intent(this, GestureRecorderService::class.java),
+                mServiceConnection,
+                Context.BIND_AUTO_CREATE
         )
     }
 
 
-    //==========================OnGestureRecordServiceListener==================================//
+    //==========================Listener==================================//
 
 
     override fun onStartRecord() {
-
+        mGestureRecorderWatcher?.onStartRecord()
     }
 
 
-    override fun onRecorded(gestureInfo: GestureInfo) {
+    override fun onRecording(gestureInfo: GestureInfo) {
+        mGestureRecorderWatcher?.onRecording(gestureInfo)
         startGesture(gestureInfo, object : GestureResultCallback() {
             override fun onCancelled(gestureDescription: GestureDescription?) {
                 mRecordServiceBinder?.onResult(true)
@@ -159,9 +179,11 @@ class GestureAccessibility : AccessibilityService(), GestureRecordService.OnGest
                 mRecordServiceBinder?.onResult(false)
             }
         }, true)
+
     }
 
     override fun onStopRecord(gestureInfoList: ArrayList<GestureInfo>) {
+        mGestureRecorderWatcher?.onStopRecord(gestureInfoList)
         if (gestureInfoList.isNotEmpty()) {
             //有手勢錄入
             //存入數據庫
@@ -174,9 +196,12 @@ class GestureAccessibility : AccessibilityService(), GestureRecordService.OnGest
             //沒有手勢錄入
             Log.d("GestureAccessibility", "result Empty")
         }
+
+
     }
 
-    override fun onUnbindRecordService() {
+    override fun onCancelRecord() {
+        mGestureRecorderWatcher?.onCancelRecord()
         unbindService(mServiceConnection)
     }
 

@@ -31,7 +31,7 @@ import kotlinx.android.synthetic.main.layout_record_btn.view.*
  *
  */
 @SuppressLint("InflateParams")
-class GestureRecordService : Service() {
+class GestureRecorderService : Service() {
 
     private val windowManager by lazy { getSystemService(Context.WINDOW_SERVICE) as WindowManager }
 
@@ -127,12 +127,12 @@ class GestureRecordService : Service() {
     //開放給客戶端的接口
     inner class IGestureRecordBinder : Binder() {
 
-        fun getService(): GestureRecordService {
-            return this@GestureRecordService
-        }
+       /* fun getService(): GestureRecorderService {
+            return this@GestureRecorderService
+        }*/
 
-        fun setOnGestureRecordedListener(listener: OnGestureRecordServiceListener?) {
-            onGestureRecordServiceListener = listener
+        fun setOnGestureRecordedListener(listener: GestureRecorderWatcher.Listener?) {
+            mOnGestureRecordListener = listener
         }
 
         fun onResult(isCancel: Boolean) {
@@ -141,37 +141,8 @@ class GestureRecordService : Service() {
 
     }
 
-    private var onGestureRecordServiceListener: OnGestureRecordServiceListener? = null
+    private var mOnGestureRecordListener: GestureRecorderWatcher.Listener? = null
 
-    //反饋給客戶端的接口
-    interface OnGestureRecordServiceListener {
-        fun onStartRecord()
-        fun onRecorded(gestureInfo: GestureInfo)
-        fun onStopRecord(gestureInfoList: ArrayList<GestureInfo>)
-        fun onUnbindRecordService()
-    }
-
-
-    override fun onRebind(intent: Intent?) {
-        Log.d("GestureAccessibility", "onRebind")
-        super.onRebind(intent)
-    }
-
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.d("GestureAccessibility", "onStartCommand")
-        return super.onStartCommand(intent, flags, startId)
-    }
-
-    override fun onUnbind(intent: Intent?): Boolean {
-        Log.d("GestureAccessibility", "onUnbind")
-        return super.onUnbind(intent)
-    }
-
-    override fun onDestroy() {
-        Log.d("GestureAccessibility", "onDestroy")
-        super.onDestroy()
-    }
 
     override fun onBind(intent: Intent?): IBinder? {
         windowManager.addView(gestureView, gestureViewParams)
@@ -181,25 +152,25 @@ class GestureRecordService : Service() {
 
 
     private fun dispatchGesture(gestureInfo: GestureInfo) {
-        onGestureRecordServiceListener?.onRecorded(gestureInfo)
+        mOnGestureRecordListener?.onRecording(gestureInfo)
     }
 
     private fun startRecord() {
         enableGestureCatchView(true)
         gestureView.startRecord()
-        onGestureRecordServiceListener?.onStartRecord()
+        mOnGestureRecordListener?.onStartRecord()
     }
 
     private fun stopRecord() {
         enableGestureCatchView(false)
         val result = gestureView.stopRecord()
-        onGestureRecordServiceListener?.onStopRecord(result)
+        mOnGestureRecordListener?.onStopRecord(result)
     }
 
     private fun cancelRecord() {
         windowManager.removeView(recordBtn)
         windowManager.removeView(gestureView)
-        onGestureRecordServiceListener?.onUnbindRecordService()
+        mOnGestureRecordListener?.onCancelRecord()
     }
 
 

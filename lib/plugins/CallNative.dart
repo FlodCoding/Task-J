@@ -23,6 +23,10 @@ class CallNative {
     return null;
   }
 
+  static addGesture() {
+    _platform.invokeMethod('addGesture');
+  }
+
   static updateTask(TaskItemBean taskBean) async {
     var map = taskBean.toJson();
     _platform.invokeMethod('updateTask', map);
