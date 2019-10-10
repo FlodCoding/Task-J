@@ -3,25 +3,27 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class TaskItemBean {
+class TaskBean {
   int id;
   bool enable;
   AppInfoBean appInfoBean;
   TimeBean timeBean;
+  Gesture gesture;
 
-  TaskItemBean({int id = 0, @required TimeBean time, @required AppInfoBean appInfo, bool start = true}) {
+  TaskBean({int id = 0, @required TimeBean time, @required AppInfoBean appInfo, bool start = true}) {
     this.id = id;
     enable = start;
     timeBean = time;
     appInfoBean = appInfo;
   }
 
-  TaskItemBean.fromJson(Map<String, dynamic> jsonMap) {
+  TaskBean.fromJson(Map<String, dynamic> jsonMap) {
     id = jsonMap['id'];
     enable = jsonMap['enable'];
     appInfoBean =
         jsonMap['appInfo'] != null ? AppInfoBean.fromJson(Map<String, dynamic>.from(jsonMap['appInfo'])) : null;
     timeBean = jsonMap['time'] != null ? TimeBean.fromJson(Map<String, dynamic>.from(jsonMap['time'])) : null;
+    gesture = jsonMap['gesture'] != null ? Gesture.fromJson(Map<String, dynamic>.from(jsonMap['gesture'])) : null;
   }
 
   Map<String, dynamic> toJson() {
@@ -34,6 +36,10 @@ class TaskItemBean {
 
     if (appInfoBean != null) {
       data['appInfo'] = appInfoBean.toJson();
+    }
+
+    if (gesture != null) {
+      data['gesture'] = gesture.toJson();
     }
     return data;
   }
@@ -149,6 +155,20 @@ class AppInfoBean {
     data['appIconBytes'] = appIconBytes;
     data['launchName'] = launchName;
     data['launchPackage'] = launchPackage;
+    return data;
+  }
+}
+
+class Gesture {
+  Uint8List gestureBundleBytes;
+
+  Gesture.fromJson(Map<String, dynamic> jsonMap) {
+    gestureBundleBytes = jsonMap['gestureBundleBytes'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['gestureBundleBytes'] = gestureBundleBytes;
     return data;
   }
 }

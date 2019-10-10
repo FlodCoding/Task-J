@@ -168,9 +168,13 @@ class GestureRecorderService : Service() {
     }
 
     private fun cancelRecord() {
+        mOnGestureRecordListener?.onCancelRecord()
+    }
+
+    override fun onUnbind(intent: Intent?): Boolean {
         windowManager.removeView(recordBtn)
         windowManager.removeView(gestureView)
-        mOnGestureRecordListener?.onCancelRecord()
+        return super.onUnbind(intent)
     }
 
 

@@ -13,13 +13,13 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<TaskItemBean> _list = [];
+  List<TaskBean> _list = [];
   bool _showDeleteIcon = false;
 
   @override
   void initState() {
     super.initState();
-    CallNative.getSavedList().then((result) {
+    CallNative.getTaskList().then((result) {
       if (result != null && result.isNotEmpty) {
         setState(() => _list = result);
       }
@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
                 break;
               case 1:
                 //TODO 去关于
-                var result = await CallNative.getSavedList();
+                var result = await CallNative.getTaskList();
                 if (result != null) {
                   setState(() {
                     _list = result;
@@ -97,7 +97,8 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
           dynamic result = await Navigator.push(context, MaterialPageRoute(builder: (context) => TaskDetailPage(null)));
-          TaskItemBean taskItemBean = await CallNative.addTask(result);
+
+          TaskBean taskItemBean = await CallNative.addTask(result);
 
           if (taskItemBean != null) {
             setState(() {

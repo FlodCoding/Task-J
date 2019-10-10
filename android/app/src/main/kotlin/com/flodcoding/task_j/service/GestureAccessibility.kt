@@ -10,7 +10,6 @@ import android.os.IBinder
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import com.flod.view.GestureInfo
-import kotlinx.coroutines.runBlocking
 
 
 /**
@@ -23,7 +22,7 @@ import kotlinx.coroutines.runBlocking
 class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.Listener {
 
     private var mGestureRecorderWatcher: GestureRecorderWatcher.Listener? = null
-    fun setGestureRecorderWatcher(watcher: GestureRecorderWatcher.Listener) {
+    fun setGestureRecorderWatcher(watcher: GestureRecorderWatcher.Listener?) {
         mGestureRecorderWatcher = watcher
     }
 
@@ -184,20 +183,7 @@ class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.List
 
     override fun onStopRecord(gestureInfoList: ArrayList<GestureInfo>) {
         mGestureRecorderWatcher?.onStopRecord(gestureInfoList)
-        if (gestureInfoList.isNotEmpty()) {
-            //有手勢錄入
-            //存入數據庫
-            runBlocking {
-                /*val result = AppDatabase.getInstance().gestureDao().insert(*(gestureInfoList.toArray(arrayOf<GestureInfo>())))
-                Log.d("GestureAccessibility", "result ${result.size}")*/
-            }
-
-        } else {
-            //沒有手勢錄入
-            Log.d("GestureAccessibility", "result Empty")
-        }
-
-
+        unbindService(mServiceConnection)
     }
 
     override fun onCancelRecord() {

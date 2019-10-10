@@ -6,7 +6,7 @@ import 'package:task_j/plugins/CallNative.dart';
 import 'condition/TimePickerPage.dart';
 
 class TaskDetailPage extends StatefulWidget {
-  final TaskItemBean _bean;
+  final TaskBean _bean;
 
   TaskDetailPage(this._bean);
 
@@ -15,14 +15,14 @@ class TaskDetailPage extends StatefulWidget {
 }
 
 class TaskDetailPageState extends State<TaskDetailPage> {
-  TaskItemBean _taskItemBean;
+  TaskBean _taskItemBean;
 
   @override
   void initState() {
     super.initState();
-    if(widget._bean==null){
-      _taskItemBean = TaskItemBean(time: null, appInfo: null);
-    }else{
+    if (widget._bean == null) {
+      _taskItemBean = TaskBean(time: null, appInfo: null);
+    } else {
       _taskItemBean = widget._bean;
     }
   }
@@ -161,12 +161,21 @@ class TaskDetailPageState extends State<TaskDetailPage> {
                   ],
                 )),
 
-            Padding(padding:EdgeInsets.only(left: 20),
-              child: FlatButton(child: Text("录制脚本",style: TextStyle(fontSize: 20),),
-                onPressed: () {
-                 CallNative.addGesture();
-
-                },),)
+            Padding(
+              padding: EdgeInsets.only(left: 20),
+              child: FlatButton(
+                child: Text(
+                  "录制脚本",
+                  style: TextStyle(fontSize: 20),
+                ),
+                onPressed: () async {
+                  Gesture gesture = await CallNative.addGesture();
+                  if (gesture != null) {
+                    _taskItemBean.gesture = gesture;
+                  }
+                },
+              ),
+            )
           ],
         ),
       ),

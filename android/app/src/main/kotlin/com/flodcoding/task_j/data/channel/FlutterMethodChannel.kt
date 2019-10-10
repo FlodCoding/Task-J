@@ -1,10 +1,11 @@
 package com.flodcoding.task_j.data.channel
 
-import android.util.Log
 import com.flod.view.GestureInfo
 import com.flodcoding.task_j.FlutterFragmentActivity
 import com.flodcoding.task_j.data.AppInfoTempBean
+import com.flodcoding.task_j.data.GestureBundle
 import com.flodcoding.task_j.data.database.AppInfo
+import com.flodcoding.task_j.data.database.Gesture
 import com.flodcoding.task_j.data.database.Task
 import com.flodcoding.task_j.data.database.TaskModel
 import com.flodcoding.task_j.service.GestureAccessibility
@@ -34,6 +35,10 @@ object FlutterMethodChannel {
                 when {
                     call.method == "showInstallAppList" ->
                         AppListDialog(object : AppListDialog.OnAppSelectedListener {
+                            override fun onCancel() {
+                                result.success(null)
+                            }
+
                             override fun onSelected(appInfoTempBean: AppInfoTempBean?) {
                                 if (appInfoTempBean != null) {
                                     result.success(AppInfo(appInfoTempBean.appName, appInfoTempBean.iconBytes
@@ -48,26 +53,22 @@ object FlutterMethodChannel {
                     }
 
                     call.method == "addGesture" -> {
-
                         GestureAccessibility.startServiceWithRecord(fragmentActivity)
-
                         GestureAccessibility.INSTANCE?.setGestureRecorderWatcher(
-                                object : GestureRecorderWatcher.Listener {
-                                    override fun onStartRecord() {
-
-                                        Log.d("GestureAccessibility","onStartRecord")
-                                    }
-
-                                    override fun onRecording(gestureInfo: GestureInfo) {
-                                        Log.d("GestureAccessibility","onRecording")
-                                    }
-
+                                object : GestureRecorderWatcher.SimpleListener() {
                                     override fun onStopRecord(gestureInfoList: ArrayList<GestureInfo>) {
-                                        Log.d("GestureAccessibility","onStopRecord")
+                                        if (gestureInfoList.isNotEmpty()) {
+                                            result.success(Gesture(GestureBundle(gestureInfoList).toBytes()).toMap())
+                                        } else {
+                                            result.success(null)
+                                        }
+
+                                        GestureAccessibility.INSTANCE?.setGestureRecorderWatcher(null)
                                     }
 
                                     override fun onCancelRecord() {
-                                        Log.d("GestureAccessibility","onCancelRecord")
+                                        result.success(null)
+                                        GestureAccessibility.INSTANCE?.setGestureRecorderWatcher(null)
                                     }
 
 
@@ -83,12 +84,15 @@ object FlutterMethodChannel {
                                 ?: return@runBlocking
                         task.time.calendarId = eventId.toLong()
 
+                        //TODO 出错处理
+
                         //放到数据库中
                         val id = TaskModel.insert(task)
                         task.id = id
 
+                        //TODO 出错处理
                         //返回给UI端
-                        result.success(task.toMap())
+                        result.success(task.getIdMap())
                     }
                     call.method == "updateTask" -> {
                         val task = JsonUtil.mapToObj(call.arguments as Map<*, *>, Task::class.java)

@@ -131,12 +131,13 @@ class AppListDialog constructor(private val onAppSelectedListener: OnAppSelected
 
     override fun onCancel(dialog: DialogInterface) {
         super.onCancel(dialog)
-        onAppSelectedListener.onSelected(null)
+        onAppSelectedListener.onCancel()
     }
 
 
     interface OnAppSelectedListener {
         fun onSelected(appInfoTempBean: AppInfoTempBean?)
+        fun onCancel()
     }
 
 

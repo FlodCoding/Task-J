@@ -1,6 +1,9 @@
+@file:Suppress("ArrayInDataClass")
+
 package com.flodcoding.task_j.data.database
 
 import androidx.room.*
+import com.flodcoding.task_j.data.GestureBundle
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -12,16 +15,17 @@ import com.google.gson.reflect.TypeToken
  * UseDes:
  */
 @Entity
-@Suppress("ArrayInDataClass")
 @TypeConverters(Converter::class)
 data class Task(
         @PrimaryKey(autoGenerate = true)
-        var id: Long = 0, var enable: Boolean,
+        var id: Long = 0,
+        var enable: Boolean,
         @Embedded
         var appInfo: AppInfo,
         @Embedded
         var time: Time,
-        var gestures: ByteArray?) {
+        @Embedded
+        var gesture: Gesture?) {
 
 
     fun toMap(): Map<String, Any?> {
@@ -30,15 +34,25 @@ data class Task(
                 "enable" to enable,
                 "appInfo" to appInfo.toMap(),
                 "time" to time.toMap(),
-                "gestures" to gestures
+                "gesture" to gesture?.toMap()
 
+        )
+    }
+
+
+    fun getIdMap(): Map<String, Any> {
+        return mapOf(
+                "id" to id,
+                "calendarId" to time.calendarId
         )
     }
 }
 
-@Suppress("ArrayInDataClass")
 @Entity
-data class AppInfo(var appName: String, var appIconBytes: ByteArray, var launchName: String, var launchPackage: String) {
+data class AppInfo(var appName: String,
+                   var appIconBytes: ByteArray,
+                   var launchName: String,
+                   var launchPackage: String) {
     fun toMap(): Map<String, Any> {
         return mapOf(
                 "appName" to appName,
@@ -66,6 +80,19 @@ data class Time(
     }
 }
 
+@Entity
+data class Gesture(var gestureBundleBytes: ByteArray) {
+    fun toMap(): Map<String, Any> {
+        return mapOf(
+                "gestureBundleBytes" to gestureBundleBytes
+        )
+    }
+
+    fun buildGestureBundle(): GestureBundle {
+        return GestureBundle.fromBytes(gestureBundleBytes)
+    }
+}
+
 class Converter {
 
     @TypeConverter
@@ -79,13 +106,4 @@ class Converter {
         return Gson().fromJson(json, type)
     }
 
-    /*  @TypeConverter
-      fun parcelToBytes(gestures: GestureInfoBundle): ByteArray {
-          return ParcelableUtil.marshall(gestures)
-      }
-  
-      @TypeConverter
-      fun bytesToParcel(bytes: ByteArray): GestureInfoBundle {
-          return ParcelableUtil.unmarshall(bytes, GestureInfoBundle.CREATOR)
-      }*/
 }

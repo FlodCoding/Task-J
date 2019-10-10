@@ -7,27 +7,36 @@ class CallNative {
   static Future<AppInfoBean> selectApp() async {
     Map result = await _platform.invokeMethod('showInstallAppList');
     if (result == null) {
+      //cancel
       return null;
     } else {
       return AppInfoBean.fromJson(Map<String, dynamic>.from(result));
     }
   }
 
-  static Future<TaskItemBean> addTask(TaskItemBean taskBean) async {
+  static Future<TaskBean> addTask(TaskBean taskBean) async {
     var map = taskBean.toJson();
     Map result = await _platform.invokeMethod('addTask', map);
+    //回传储存进数据库的Id
     if (result != null) {
-      return TaskItemBean.fromJson(Map<String, dynamic>.from(result));
+      Map<String, dynamic> jsonMap = Map<String, dynamic>.from(result);
+      taskBean.id = jsonMap['id'];
+      taskBean.timeBean.calendarId = jsonMap['calendarId'];
+      return taskBean;
     }
 
     return null;
   }
 
-  static addGesture() {
-    _platform.invokeMethod('addGesture');
+  static Future<Gesture> addGesture() async {
+    Map result = await _platform.invokeMethod('addGesture');
+    if (result != null) {
+      return Gesture.fromJson(Map<String, dynamic>.from(result));
+    }
+    return null;
   }
 
-  static updateTask(TaskItemBean taskBean) async {
+  static updateTask(TaskBean taskBean) async {
     var map = taskBean.toJson();
     _platform.invokeMethod('updateTask', map);
   }
@@ -36,10 +45,10 @@ class CallNative {
     _platform.invokeMethod('deleteTask', <String, dynamic>{"id": id});
   }
 
-  static Future<List<TaskItemBean>> getSavedList() async {
+  static Future<List<TaskBean>> getTaskList() async {
     dynamic result = await _platform.invokeMethod('getTaskList');
     if (result is List) {
-      return result.map((f) => f = TaskItemBean.fromJson(Map<String, dynamic>.from(f))).toList();
+      return result.map((f) => f = TaskBean.fromJson(Map<String, dynamic>.from(f))).toList();
     }
 
     return null;

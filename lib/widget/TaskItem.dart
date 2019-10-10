@@ -5,14 +5,14 @@ import 'package:task_j/page/TaskDetail.dart';
 import 'package:task_j/style/CommonStyle.dart';
 
 typedef OnLongPress(bool showDeleteIcon);
-typedef OnDelete(int index, TaskItemBean task);
-typedef OnUpdate(int index, TaskItemBean task);
+typedef OnDelete(int index, TaskBean task);
+typedef OnUpdate(int index, TaskBean task);
 
 class TaskItem extends StatefulWidget {
   final bool showDeleteIcon;
   final OnDelete onDelete;
   final OnLongPress onLongPress;
-  TaskItemBean taskBean;
+  TaskBean taskBean;
   final OnUpdate onUpdate;
   final int index;
 
@@ -42,7 +42,7 @@ class _TaskItemState extends State<TaskItem> {
             dynamic result = await Navigator.push(context, MaterialPageRoute(builder: (context) {
               return TaskDetailPage(task);
             }));
-            if (result is TaskItemBean) {
+            if (result is TaskBean) {
               widget.onUpdate(widget.index, result);
 
               setState(() {
