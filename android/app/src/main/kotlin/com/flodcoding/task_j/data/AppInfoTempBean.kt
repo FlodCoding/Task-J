@@ -13,21 +13,20 @@ import java.io.Serializable
  * Date: 2019-08-06
  * UseDes:
  */
-class AppInfoTempBean(val appIcon: Drawable?, val appName: String, val info: ActivityInfo,val bitmap: Bitmap) : Serializable {
+class AppInfoTempBean(val appIcon: Drawable?, val appName: String, val info: ActivityInfo) : Serializable {
 
 
     internal val iconBytes: ByteArray?
         get() {
-            if (appIcon == null) return null
-            return getBytes(appIcon)
+            val drawable = appIcon ?: return null
+            
+            val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            drawable.setBounds(0, 0, canvas.width, canvas.height)
+            drawable.draw(canvas)
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
+            return baos.toByteArray()
         }
-
-
-    fun getBytes(drawable: Drawable): ByteArray{
-        val bitmap = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-        drawable.draw(Canvas(bitmap))
-        val baos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos)
-        return baos.toByteArray()
-    }
+    
 }

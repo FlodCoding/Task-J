@@ -15,7 +15,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.flod.view.DrawableTextView
+import com.flod.drawabletextview.DrawableTextView
 import com.flodcoding.task_j.R
 import com.flodcoding.task_j.data.AppInfoTempBean
 import com.flodcoding.task_j.utils.TaskUtil
@@ -29,7 +29,6 @@ import kotlinx.coroutines.*
  */
 class AppListDialog constructor(private val onAppSelectedListener: OnAppSelectedListener) : DialogFragment(), CoroutineScope by MainScope() {
     private lateinit var mAdapter: Adapter
-    //private lateinit var onAppSelectedListener:OnAppSelectedListener
 
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -95,7 +94,7 @@ class AppListDialog constructor(private val onAppSelectedListener: OnAppSelected
 
 
         fun setDate(list: List<AppInfoTempBean>) {
-            this.mInfoTempList = list;
+            this.mInfoTempList = list
             notifyDataSetChanged()
         }
 
@@ -107,25 +106,10 @@ class AppListDialog constructor(private val onAppSelectedListener: OnAppSelected
 
         override fun onBindViewHolder(@NonNull holder: Holder, i: Int) {
             val info = mInfoTempList[i]
-            
+
             if (info.appIcon != null) {
-               /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                        && (info.appIcon is AdaptiveIconDrawable)) {
-                    *//*val foregroundBounds = info.appIcon.foreground.bounds
-                    val backgroundBounds = info.appIcon.background.bounds
-                    info.appIcon.foreground.setBounds(0,0,foregroundBounds.width(),foregroundBounds.height())
-                    info.appIcon.background.setBounds(0,0,backgroundBounds.width(),backgroundBounds.height())*//*
-                    //info.appIcon.setBounds(0, 20, info.appIcon.intrinsicWidth, info.appIcon.intrinsicHeight + 20)
-                   //Glide.with(requireContext()).asDrawable().load(info.appIcon).fitCenter().into( holder.imIcon)
+                holder.tvApp.setDrawableStart(info.appIcon, 30, 30)
 
-                    holder.imIcon.setImageBitmap(info.bitmap)
-
-                } else {
-
-                    holder.imIcon.setImageDrawable(info.appIcon)
-                }*/
-                //holder.imIcon.setImageDrawable(info.appIcon)
-                holder.tvApp.setDrawableStart(info.appIcon,30,30)
             }
 
             holder.tvApp.text = info.appName

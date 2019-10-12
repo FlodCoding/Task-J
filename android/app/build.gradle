@@ -85,6 +85,6 @@ dependencies {
 
 
 
-    implementation 'com.github.FlodCoding:DrawableTextView:1.0.0'
+    implementation 'com.github.FlodCoding:DrawableTextView:1.0.1'
     implementation 'com.github.FlodCoding:GestureCatchView:0.1.3'
 }

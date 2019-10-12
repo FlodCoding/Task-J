@@ -67,7 +67,7 @@ object TaskUtil {
                 val title = info.applicationInfo.loadLabel(packageManager).toString()
 
 
-                val appInfoBean = AppInfoTempBean(iconDraw, title, info, getBitmapFromDrawable(iconDraw)!!)
+                val appInfoBean = AppInfoTempBean(iconDraw, title, info)
                 appInfoBeans.add(appInfoBean)
             }
 
@@ -76,26 +76,7 @@ object TaskUtil {
         return appInfoBeans
     }
 
-
-   /* private fun getBitmapFromDrawable(drawable: Drawable): Bitmap? {
-        if (drawable is BitmapDrawable) {
-            return drawable.bitmap
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && (drawable is AdaptiveIconDrawable)) {
-            val backgroundDr = drawable.background
-            val foregroundDr = drawable.foreground
-            val layerDrawable = LayerDrawable(arrayOf(backgroundDr, foregroundDr))
-
-            val bitmap = Bitmap.createBitmap(layerDrawable.intrinsicWidth, layerDrawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            layerDrawable.setBounds(0, 0, canvas.width, canvas.height)
-            layerDrawable.draw(canvas)
-
-            return bitmap
-        }
-
-        return null
-    }*/
+    
 
     private fun getBitmapFromDrawable(drawable: Drawable): Bitmap {
         val bmp = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
