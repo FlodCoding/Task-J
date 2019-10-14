@@ -12,7 +12,7 @@
     <application
         android:name=".App"
         android:icon="@mipmap/ic_launcher"
-        android:label="任务姬">
+        android:label="@string/app_name">
         <activity android:name=".view.gesture.UnlockGestureActivity"/>
         <activity
             android:name=".MainActivity"

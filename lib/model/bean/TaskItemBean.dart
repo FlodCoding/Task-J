@@ -52,7 +52,7 @@ class TimeBean {
 
   static String get strToday => "今天";
 
-  int calendarId;
+  int eventId;
   bool repeat;
   List<bool> repeatInWeek;
 
@@ -72,7 +72,7 @@ class TimeBean {
   }) {
     if (repeatInWeek == null) repeatInWeek = List.generate(7, (index) => false);
 
-    this.calendarId = calendarId;
+    this.eventId = calendarId;
     this.repeatInWeek = repeatInWeek;
     this.repeat = repeat;
     this.dateTime = dateTime;
@@ -113,7 +113,7 @@ class TimeBean {
   }
 
   TimeBean.fromJson(Map<String, dynamic> jsonMap) {
-    calendarId = jsonMap['calendarId'];
+    eventId = jsonMap['calendarId'];
     repeat = jsonMap['repeat'];
     repeatInWeek = List.castFrom(jsonMap['repeatInWeek']);
     dateTime = DateTime.fromMillisecondsSinceEpoch(jsonMap['dateTime']);
@@ -121,7 +121,7 @@ class TimeBean {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = Map<String, dynamic>();
-    data['calendarId'] = calendarId;
+    data['calendarId'] = eventId;
     data['repeat'] = repeat;
     data['repeatInWeek'] = repeatInWeek;
     data['dateTime'] = dateTime.millisecondsSinceEpoch;

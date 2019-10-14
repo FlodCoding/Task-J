@@ -43,7 +43,7 @@ data class Task(
     fun getIdMap(): Map<String, Any> {
         return mapOf(
                 "id" to id,
-                "calendarId" to time.calendarId
+                "eventId" to time.eventId
         )
     }
 }
@@ -66,13 +66,13 @@ data class AppInfo(var appName: String,
 
 @Entity
 data class Time(
-        var calendarId: Long,
+        var eventId: Long,
         var repeat: Boolean,
         var repeatInWeek: List<Boolean>,
         var dateTime: Long) {
     fun toMap(): Map<String, Any> {
         return mapOf(
-                "calendarId" to calendarId,
+                "eventId" to eventId,
                 "repeat" to repeat,
                 "repeatInWeek" to repeatInWeek,
                 "dateTime" to dateTime

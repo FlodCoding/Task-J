@@ -90,8 +90,8 @@ class GestureRecorderService : Service() {
 
     private val recordBtn by lazy {
         val recordBtn = LayoutInflater.from(this).inflate(
-            R.layout.layout_record_btn,
-            null
+                R.layout.layout_record_btn,
+                null
         ) as MovableLayout
         val layRecord = recordBtn.layRecord
         val tvRecord = recordBtn.tvRecord
@@ -103,6 +103,7 @@ class GestureRecorderService : Service() {
             it.isActivated = !it.isActivated
             if (it.isActivated) {
                 //Start
+                layClose.visibility = View.GONE
                 imRecord.setImageResource(R.drawable.ic_stop_white)
                 tvRecord.base = SystemClock.elapsedRealtime()
                 tvRecord.start()
@@ -127,9 +128,9 @@ class GestureRecorderService : Service() {
     //開放給客戶端的接口
     inner class IGestureRecordBinder : Binder() {
 
-       /* fun getService(): GestureRecorderService {
-            return this@GestureRecorderService
-        }*/
+        /* fun getService(): GestureRecorderService {
+             return this@GestureRecorderService
+         }*/
 
         fun setOnGestureRecordedListener(listener: GestureRecorderWatcher.Listener?) {
             mOnGestureRecordListener = listener

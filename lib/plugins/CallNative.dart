@@ -21,7 +21,7 @@ class CallNative {
     if (result != null) {
       Map<String, dynamic> jsonMap = Map<String, dynamic>.from(result);
       taskBean.id = jsonMap['id'];
-      taskBean.timeBean.calendarId = jsonMap['calendarId'];
+      taskBean.timeBean.eventId = jsonMap['calendarId'];
       return taskBean;
     }
 

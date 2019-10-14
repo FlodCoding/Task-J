@@ -35,7 +35,7 @@ class TimePickerPageState extends State<TimePickerPage> with SingleTickerProvide
     if (widget._timeBean != null) {
       var bean = widget._timeBean;
       _timeBean = TimeBean(
-          calendarId: bean.calendarId, repeat: bean.repeat, repeatInWeek: bean.repeatInWeek, dateTime: bean.dateTime);
+          calendarId: bean.eventId, repeat: bean.repeat, repeatInWeek: bean.repeatInWeek, dateTime: bean.dateTime);
       isDateSet = true;
     } else {
       _timeBean = TimeBean(dateTime: _today);

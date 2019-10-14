@@ -80,9 +80,9 @@ object FlutterMethodChannel {
                                 ?: return@runBlocking
 
                         //添加到日历中
-                        val eventId = CalendarUtil.insertTask(fragmentActivity, task)
+                        val eventId = CalendarUtil.addEvent(fragmentActivity, task)
                                 ?: return@runBlocking
-                        task.time.calendarId = eventId.toLong()
+                        task.time.eventId = eventId.toLong()
 
                         //TODO 出错处理
 
@@ -94,11 +94,11 @@ object FlutterMethodChannel {
                         //返回给UI端
                         result.success(task.getIdMap())
                     }
-                    call.method == "updateTask" -> {
+                    call.method == "updateEvent" -> {
                         val task = JsonUtil.mapToObj(call.arguments as Map<*, *>, Task::class.java)
                                 ?: return@runBlocking
 
-                        CalendarUtil.updateTask(fragmentActivity, task)
+                        CalendarUtil.updateEvent(fragmentActivity, task)
                         TaskModel.update(task)
                     }
                     call.method == "deleteTask" -> {
@@ -106,7 +106,7 @@ object FlutterMethodChannel {
                         val task = TaskModel.queryById(id.toLong())
 
                         if (task != null) {
-                            CalendarUtil.deleteTask(fragmentActivity, task.time.calendarId)
+                            CalendarUtil.deleteEvent(fragmentActivity, task.time.eventId)
                             TaskModel.delete(task)
                         }
                     }
