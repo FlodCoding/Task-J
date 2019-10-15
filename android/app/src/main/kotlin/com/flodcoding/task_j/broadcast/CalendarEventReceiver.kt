@@ -6,6 +6,7 @@ import android.content.Intent
 import android.util.Log
 import android.widget.Toast
 import com.flodcoding.task_j.data.database.TaskModel
+import com.flodcoding.task_j.utils.CalendarUtil
 import com.flodcoding.task_j.utils.TaskUtil
 import kotlinx.coroutines.*
 
@@ -23,14 +24,20 @@ class CalendarEventReceiver : BroadcastReceiver() {
         context ?: return
         intent ?: return
 
-        val startTime = intent.data?.lastPathSegment?.toLong() ?: return
+        val startTime = intent.data?.lastPathSegment?.toLongOrNull() ?: return
+
         Log.d("start_time", "BroadcastReceiver:$startTime")
 
+        val eventIds = CalendarUtil.queryEventIdByTime(context, startTime.toString())
+        if (eventIds.isEmpty()) return
+
         runBlocking {
-            val task = TaskModel.queryByTime(startTime)
+            val task = TaskModel.queryByEventId(eventIds[0])
             if (task != null) {
                 context.startActivity(TaskUtil.launchAppIntent(task.appInfo.launchPackage, task.appInfo.launchName))
             }
+
+
 
         }
 
@@ -44,8 +51,6 @@ class CalendarEventReceiver : BroadcastReceiver() {
 
 
     }
-
-
 
 
     /* private fun queryEventId(context: Context, alertTime: String){

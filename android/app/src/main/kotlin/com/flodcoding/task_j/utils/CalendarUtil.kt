@@ -50,7 +50,8 @@ object CalendarUtil {
         eventId ?: return null
 
         val remindersValues = buildReminderContentValues(eventId)
-        return cr.insert(CalendarContract.Reminders.CONTENT_URI, remindersValues)?.lastPathSegment
+        cr.insert(CalendarContract.Reminders.CONTENT_URI, remindersValues)
+        return eventId
 
     }
 
@@ -65,8 +66,6 @@ object CalendarUtil {
                 CalendarContract.Events.CONTENT_URI,
                 task.time.eventId),
                 contentValues, null, null)
-
-
     }
 
 
@@ -79,17 +78,16 @@ object CalendarUtil {
     private fun buildEventContentValues(calendarId: Int, task: Task): ContentValues {
         val contentValues = ContentValues()
         contentValues.put(CalendarContract.Events.CALENDAR_ID, calendarId)
-
-        //闹钟无效
-        //contentValues.put(CalendarContract.Events.HAS_ALARM, true)
-        contentValues.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
-
         contentValues.put(CalendarContract.Events.TITLE, "打开 " + task.appInfo.appName)
         contentValues.put(CalendarContract.Events.DESCRIPTION, "此事件用来触发打开软件，请勿修改或删除")
+        //闹钟无效
+        //contentValues.put(CalendarContract.Events.HAS_ALARM, true)
 
+        contentValues.put(CalendarContract.Events.EVENT_TIMEZONE, TimeZone.getDefault().id)
         contentValues.put(CalendarContract.Events.DTSTART, task.time.dateTime)
-        contentValues.put(CalendarContract.Events.DTEND, task.time.dateTime + 600000)
-        Log.d("start_time", "buildEventContentValues:${task.time.dateTime}")
+        contentValues.put(CalendarContract.Events.DTEND, task.time.dateTime)
+
+        Log.d("start_time", "addtime:${task.time.dateTime}")
         if (task.time.repeat) {
             //重复规则
             contentValues.put(CalendarContract.Events.RRULE, getFreqRule(task.time.repeatInWeek))
@@ -103,6 +101,9 @@ object CalendarUtil {
 
         contentValues.put(CalendarContract.Reminders.EVENT_ID, eventId)
         contentValues.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT)
+        //MINUTES = 0 或不添加无通知提醒
+        //contentValues.put(CalendarContract.Reminders.MINUTES, CalendarContract.Reminders.MINUTES_DEFAULT)
+        contentValues.put(CalendarContract.Reminders.MINUTES, CalendarContract.Reminders.MINUTES_DEFAULT)
 
         return contentValues
     }
@@ -119,6 +120,25 @@ object CalendarUtil {
 
         }
         return rule.toString()
+
+    }
+
+
+    fun queryEventIdByTime(context: Context, alertTime: String): ArrayList<Long> {
+        val selection = "${CalendarContract.CalendarAlerts.ALARM_TIME} = ?"
+        val eventIdList = ArrayList<Long>()
+        //通过提醒的时间查询到相应的EventId
+        val cursor = context.contentResolver.query(
+                CalendarContract.CalendarAlerts.CONTENT_URI_BY_INSTANCE,
+                arrayOf(CalendarContract.CalendarAlerts.EVENT_ID), selection, arrayOf(alertTime), null)
+        if (cursor != null && cursor.count > 0) {
+            while (cursor.moveToNext()) {
+                eventIdList.add(cursor.getLong(0))
+            }
+            cursor.close()
+        }
+
+        return eventIdList
 
     }
 

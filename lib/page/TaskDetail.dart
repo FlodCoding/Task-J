@@ -165,13 +165,15 @@ class TaskDetailPageState extends State<TaskDetailPage> {
               padding: EdgeInsets.only(left: 20),
               child: FlatButton(
                 child: Text(
-                  "录制脚本",
+                  _taskItemBean.gesture == null ? "录制触摸" : "已录制触摸",
                   style: TextStyle(fontSize: 20),
                 ),
                 onPressed: () async {
                   Gesture gesture = await CallNative.addGesture();
                   if (gesture != null) {
-                    _taskItemBean.gesture = gesture;
+                    setState(() {
+                      _taskItemBean.gesture = gesture;
+                    });
                   }
                 },
               ),

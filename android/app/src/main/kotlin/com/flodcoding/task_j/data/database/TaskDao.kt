@@ -11,13 +11,17 @@ import androidx.room.*
  */
 @Dao
 interface TaskDao {
-    @Query("SELECT * from task where id = :id LIMIT 1")
+    @Query("SELECT * FROM task where id = :id LIMIT 1")
     suspend fun getTaskById(id: Long): Task?
+
+    @Query("SELECT * FROM task where eventId = :eventId LIMIT 1")
+    suspend fun getTaskByEventId(eventId: Long): Task?
+
 
     @Query("SELECT * FROM task")
     suspend fun getAll(): List<Task>
 
-    @Query("select * from task where dateTime = :time")
+    @Query("SELECT * FROM task where dateTime = :time")
     suspend fun getTaskByTime(time: Long): List<Task>
 
     @Delete

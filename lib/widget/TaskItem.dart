@@ -101,7 +101,7 @@ class _TaskItemState extends State<TaskItem> {
                       time.timeOfDayToString(),
                       style: TextStyle(fontSize: 25),
                     ),
-                    Expanded(child: Text(" 时打开")),
+                    Expanded(child: Text(" 时打开 " + (widget.taskBean.gesture == null ? "" : "然后回放触摸"))),
                     Icon(
                       Icons.keyboard_arrow_right,
                       size: 30,

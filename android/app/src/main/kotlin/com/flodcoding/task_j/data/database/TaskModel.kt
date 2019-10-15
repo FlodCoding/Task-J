@@ -24,6 +24,10 @@ object TaskModel {
         return AppDatabase.getInstance().taskDao().getTaskById(id)
     }
 
+    suspend fun queryByEventId(eventId: Long): Task? {
+        return AppDatabase.getInstance().taskDao().getTaskByEventId(eventId)
+    }
+
     suspend fun queryByTime(time: Long): Task? {
         //TODO 存在相同时间的任务，将如何处理
         val list = AppDatabase.getInstance().taskDao().getTaskByTime(time)
