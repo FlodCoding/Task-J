@@ -7,7 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import com.flodcoding.task_j.data.database.TaskModel
 import com.flodcoding.task_j.utils.CalendarUtil
-import com.flodcoding.task_j.utils.TaskUtil
+import com.flodcoding.task_j.utils.AppUtil
 import kotlinx.coroutines.*
 
 
@@ -24,6 +24,8 @@ class CalendarEventReceiver : BroadcastReceiver() {
         context ?: return
         intent ?: return
 
+
+        //TODO 不可执行耗时操作，是否需要开启Service
         val startTime = intent.data?.lastPathSegment?.toLongOrNull() ?: return
 
         Log.d("start_time", "BroadcastReceiver:$startTime")
@@ -34,7 +36,7 @@ class CalendarEventReceiver : BroadcastReceiver() {
         runBlocking {
             val task = TaskModel.queryByEventId(eventIds[0])
             if (task != null) {
-                context.startActivity(TaskUtil.launchAppIntent(task.appInfo.launchPackage, task.appInfo.launchName))
+                context.startActivity(AppUtil.getLaunchAppIntent(task.appInfo.launchPackage, task.appInfo.launchName))
             }
 
 

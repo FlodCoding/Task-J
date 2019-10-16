@@ -1,17 +1,15 @@
 package com.flodcoding.task_j.utils
 
+import android.app.Activity
+import android.app.ActivityManager
 import android.content.ComponentName
 import android.content.Context
+import android.content.Context.ACTIVITY_SERVICE
 import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import android.graphics.Bitmap
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import com.flodcoding.task_j.data.AppInfoTempBean
-
-
 
 
 /**
@@ -20,7 +18,7 @@ import com.flodcoding.task_j.data.AppInfoTempBean
  * Date: 2019-08-06
  * UseDes:
  */
-object TaskUtil {
+object AppUtil {
 
     //获取用户安装的APP
     fun getInstalledApplication(context: Context, needSysAPP: Boolean): List<ResolveInfo> {
@@ -66,27 +64,24 @@ object TaskUtil {
                 val iconDraw = info.applicationInfo.loadIcon(packageManager)
                 val title = info.applicationInfo.loadLabel(packageManager).toString()
 
-
                 val appInfoBean = AppInfoTempBean(iconDraw, title, info)
                 appInfoBeans.add(appInfoBean)
             }
-
         }
 
         return appInfoBeans
     }
 
-    
 
-    private fun getBitmapFromDrawable(drawable: Drawable): Bitmap {
+    /*private fun getBitmapFromDrawable(drawable: Drawable): Bitmap {
         val bmp = Bitmap.createBitmap(drawable.intrinsicWidth, drawable.intrinsicHeight, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bmp)
         drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
         return bmp
-    }
+    }*/
 
-    fun launchAppIntent(launchPackage: String, launchName: String): Intent {
+    fun getLaunchAppIntent(launchPackage: String, launchName: String): Intent {
         val intent = Intent(Intent.ACTION_MAIN)
         intent.addCategory(Intent.CATEGORY_LAUNCHER)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -94,5 +89,12 @@ object TaskUtil {
         intent.component = cn
         return intent
     }
+
+
+    fun moveActivtyToFront(context: Activity) {
+        val activityManager = context.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        activityManager.moveTaskToFront(context.taskId, 0)
+    }
+
 
 }

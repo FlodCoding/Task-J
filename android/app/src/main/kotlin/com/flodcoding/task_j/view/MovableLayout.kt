@@ -9,6 +9,7 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.WindowManager
 import android.widget.LinearLayout
+import kotlin.math.abs
 
 /**
  * SimpleDes:
@@ -32,7 +33,7 @@ class MovableLayout @JvmOverloads constructor(context: Context, attrs: Attribute
         windowLayoutParams.format = PixelFormat.RGBA_8888
         windowLayoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT
         windowLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT
-        windowLayoutParams.gravity = Gravity.START
+        windowLayoutParams.gravity = Gravity.END
         windowLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
     }
 
@@ -52,9 +53,11 @@ class MovableLayout @JvmOverloads constructor(context: Context, attrs: Attribute
                 val nowY = event.rawY
                 val movedX = nowX - tempX
                 val movedY = nowY - tempY
+
+                Gravity.END
                 tempX = nowX
                 tempY = nowY
-                windowLayoutParams.x = (windowLayoutParams.x + movedX).toInt()
+                windowLayoutParams.x = abs(windowLayoutParams.x + movedX).toInt()
                 windowLayoutParams.y = (windowLayoutParams.y + movedY).toInt()
                 val windowManager =
                     context.getSystemService(Context.WINDOW_SERVICE) as WindowManager

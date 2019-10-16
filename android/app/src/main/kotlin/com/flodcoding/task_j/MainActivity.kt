@@ -13,6 +13,7 @@ class MainActivity : FlutterFragmentActivity() {
 
         FlutterMethodChannel.registerMethodCallBack(this)
 
+
     }
 
 }

@@ -33,13 +33,12 @@ import kotlinx.android.synthetic.main.layout_record_btn.view.*
 @SuppressLint("InflateParams")
 class GestureRecorderService : Service() {
 
-    private val windowManager by lazy { getSystemService(Context.WINDOW_SERVICE) as WindowManager }
 
+    private val windowManager by lazy { getSystemService(Context.WINDOW_SERVICE) as WindowManager }
 
     private val gestureView: GestureCatchView by lazy {
         val gestureCatchView = GestureCatchView(this)
         gestureCatchView.setBackgroundColor(Color.WHITE)
-        gestureCatchView.alpha = 0.5f
         var isAfterGesture: Boolean
         gestureCatchView.onGestureListener = object : GestureCatchView.OnGestureListener {
             override fun onGesturing(gesturePoint: GesturePoint) {
@@ -89,10 +88,8 @@ class GestureRecorderService : Service() {
     }
 
     private val recordBtn by lazy {
-        val recordBtn = LayoutInflater.from(this).inflate(
-                R.layout.layout_record_btn,
-                null
-        ) as MovableLayout
+        val recordBtn = LayoutInflater.from(this)
+                .inflate(R.layout.layout_record_btn, null) as MovableLayout
         val layRecord = recordBtn.layRecord
         val tvRecord = recordBtn.tvRecord
         val imRecord = recordBtn.imRecord
@@ -128,9 +125,9 @@ class GestureRecorderService : Service() {
     //開放給客戶端的接口
     inner class IGestureRecordBinder : Binder() {
 
-        /* fun getService(): GestureRecorderService {
-             return this@GestureRecorderService
-         }*/
+        fun performStart(){
+            recordBtn.layRecord.callOnClick()
+        }
 
         fun setOnGestureRecordedListener(listener: GestureRecorderWatcher.Listener?) {
             mOnGestureRecordListener = listener
@@ -141,6 +138,8 @@ class GestureRecorderService : Service() {
         }
 
     }
+
+
 
     private var mOnGestureRecordListener: GestureRecorderWatcher.Listener? = null
 
@@ -184,12 +183,12 @@ class GestureRecorderService : Service() {
             gestureViewParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_FULLSCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-            gestureView.alpha = 0.3f
+            gestureView.alpha = 0f
         } else {
             gestureViewParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE or
                     WindowManager.LayoutParams.FLAG_FULLSCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
-            gestureView.alpha = 0.6f
+            gestureView.alpha = 0.4f
         }
         windowManager.updateViewLayout(gestureView, gestureViewParams)
     }

@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package com.flodcoding.task_j.service
 
 import android.accessibilityservice.AccessibilityService
@@ -21,53 +23,63 @@ import com.flod.view.GestureInfo
  */
 class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.Listener {
 
-    private var mGestureRecorderWatcher: GestureRecorderWatcher.Listener? = null
-    fun setGestureRecorderWatcher(watcher: GestureRecorderWatcher.Listener?) {
-        mGestureRecorderWatcher = watcher
-    }
+    private var mMode: Int = 0
 
     companion object {
-        private const val KEY_IS_RECORD = "KEY_IS_RECORD"
+        private const val FLAG_MODE = "FLAG_MODE"
+        private const val MODE_DISPATCH_GESTURE = 1
+        private const val MODE_GESTURE_RECORD_DEFAULT = 2 //启动后手动开启录制
+        private const val MODE_GESTURE_RECORD_AUTO = 3    //启动后立刻开始录制
+
+
+        private var mGestureRecorderWatcher: GestureRecorderWatcher.Listener? = null
 
         //由于onBind 在AccessibilityService中被设置为final，无法使用bindService与外界通信
-        //目前就先单例这个Service，通过接口将数据回调出去
-        var INSTANCE: GestureAccessibility? = null
+        //目前就先使用静态接口，通过接口将数据回调出去，不太好的做法，后面是否考虑别的方式
+        fun setGestureRecorderWatcher(watcher: GestureRecorderWatcher.Listener?) {
+            mGestureRecorderWatcher = watcher
+        }
 
         fun startGestures(context: Context, gestures: ArrayList<GestureInfo>) {
             val intent = Intent(context, GestureAccessibility::class.java)
+            intent.putExtra(FLAG_MODE, MODE_DISPATCH_GESTURE)
             intent.putParcelableArrayListExtra("gesture", gestures)
             context.startService(intent)
         }
 
-        fun startServiceWithRecord(context: Context) {
+        fun startRecordService(context: Context) {
             val intent = Intent(context, GestureAccessibility::class.java)
-            intent.putExtra(KEY_IS_RECORD, true)
+            intent.putExtra(FLAG_MODE, MODE_GESTURE_RECORD_DEFAULT)
+            context.startService(intent)
+        }
+
+        fun startRecord(context: Context) {
+            val intent = Intent(context, GestureAccessibility::class.java)
+            intent.putExtra(FLAG_MODE, MODE_GESTURE_RECORD_AUTO)
             context.startService(intent)
         }
     }
 
-    override fun onServiceConnected() {
-        super.onServiceConnected()
-        INSTANCE = this
-    }
-
     override fun onUnbind(intent: Intent?): Boolean {
-        INSTANCE = null
+        mGestureRecorderWatcher = null
         return super.onUnbind(intent)
     }
 
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         Log.d("GestureAccessibility", "onStartCommand")
-        val isRecord = intent.getBooleanExtra(KEY_IS_RECORD, false)
-        if (!isRecord) {
-            val gestures = intent.getParcelableArrayListExtra<GestureInfo>("gesture")
-            if (gestures != null) {
-                dispatchGestures(gestures)
+
+        mMode = intent.getIntExtra(FLAG_MODE, 0)
+        when (mMode) {
+            MODE_DISPATCH_GESTURE -> {
+                val gestures = intent.getParcelableArrayListExtra<GestureInfo>("gesture")
+                if (gestures != null) {
+                    dispatchGestures(gestures)
+                }
             }
-        } else {
             //RecordGesture
-            bindGestureRecordService()
+            MODE_GESTURE_RECORD_DEFAULT or
+                    MODE_GESTURE_RECORD_AUTO -> bindGestureRecordService()
         }
 
         return super.onStartCommand(intent, flags, startId)
@@ -77,7 +89,7 @@ class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.List
     private fun dispatchGestures(gestures: ArrayList<GestureInfo>) {
 
         var index = 0
-        val callBack = object : GestureResultCallback() {
+        val callBack = object : AccessibilityService.GestureResultCallback() {
             override fun onCancelled(gestureDescription: GestureDescription?) {
                 Log.d("GestureAccessibility", "onCancelled")
             }
@@ -102,7 +114,10 @@ class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.List
     }
 
 
-    private fun startGesture(gestureInfo: GestureInfo, gestureResultCallback: GestureResultCallback, immediately: Boolean) {
+    private fun startGesture(gestureInfo: GestureInfo,
+                             gestureResultCallback: GestureResultCallback,
+                             immediately: Boolean) {
+
         val builder = GestureDescription.Builder()
         val gesture = gestureInfo.gesture
 
@@ -145,17 +160,19 @@ class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.List
                 service.setOnGestureRecordedListener(this@GestureAccessibility)
                 mRecordServiceBinder = service
 
+                //自动开始
+                if (mMode == MODE_GESTURE_RECORD_AUTO) {
+                    service.performStart()
+                }
+
             }
 
         }
     }
 
     private fun bindGestureRecordService() {
-        bindService(
-                Intent(this, GestureRecorderService::class.java),
-                mServiceConnection,
-                Context.BIND_AUTO_CREATE
-        )
+        val intent = Intent(this, GestureRecorderService::class.java)
+        bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE)
     }
 
 

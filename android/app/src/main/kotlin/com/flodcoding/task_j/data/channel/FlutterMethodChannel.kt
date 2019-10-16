@@ -10,6 +10,7 @@ import com.flodcoding.task_j.data.database.Task
 import com.flodcoding.task_j.data.database.TaskModel
 import com.flodcoding.task_j.service.GestureAccessibility
 import com.flodcoding.task_j.service.GestureRecorderWatcher
+import com.flodcoding.task_j.utils.AppUtil
 import com.flodcoding.task_j.utils.CalendarUtil
 import com.flodcoding.task_j.utils.JsonUtil
 import com.flodcoding.task_j.view.AppListDialog
@@ -53,9 +54,20 @@ object FlutterMethodChannel {
                     }
 
                     call.method == "addGesture" -> {
-                        GestureAccessibility.startServiceWithRecord(fragmentActivity)
-                        GestureAccessibility.INSTANCE?.setGestureRecorderWatcher(
+
+                        val appInfo = JsonUtil.mapToObj(call.arguments as Map<*, *>, AppInfo::class.java)
+                                ?: return@runBlocking
+
+                        //显示录制悬浮窗
+                        GestureAccessibility.startRecord(fragmentActivity)
+                        GestureAccessibility.setGestureRecorderWatcher(
                                 object : GestureRecorderWatcher.SimpleListener() {
+                                    override fun onStartRecord() {
+                                        //打开App
+                                        //TODO 可能需要一些措施防止录制的时候activity被杀
+                                        fragmentActivity.startActivity(AppUtil.getLaunchAppIntent(appInfo.launchPackage, appInfo.launchName))
+                                    }
+
                                     override fun onStopRecord(gestureInfoList: ArrayList<GestureInfo>) {
                                         if (gestureInfoList.isNotEmpty()) {
                                             result.success(Gesture(GestureBundle(gestureInfoList).toBytes()).toMap())
@@ -63,12 +75,14 @@ object FlutterMethodChannel {
                                             result.success(null)
                                         }
 
-                                        GestureAccessibility.INSTANCE?.setGestureRecorderWatcher(null)
+                                        AppUtil.moveActivtyToFront(fragmentActivity)
+                                        GestureAccessibility.setGestureRecorderWatcher(null)
                                     }
 
                                     override fun onCancelRecord() {
                                         result.success(null)
-                                        GestureAccessibility.INSTANCE?.setGestureRecorderWatcher(null)
+                                        AppUtil.moveActivtyToFront(fragmentActivity)
+                                        GestureAccessibility.setGestureRecorderWatcher(null)
                                     }
 
 

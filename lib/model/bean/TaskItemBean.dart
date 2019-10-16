@@ -157,6 +157,13 @@ class AppInfoBean {
     data['launchPackage'] = launchPackage;
     return data;
   }
+
+  Map<String, dynamic> toLaunchInfoJson() {
+    final Map<String, dynamic> data = Map<String, dynamic>();
+    data['launchName'] = launchName;
+    data['launchPackage'] = launchPackage;
+    return data;
+  }
 }
 
 class Gesture {

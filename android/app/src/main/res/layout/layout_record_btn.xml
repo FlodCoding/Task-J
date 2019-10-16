@@ -35,17 +35,17 @@
     </LinearLayout>
 
 
-    <View
-        android:layout_width="1px"
-        android:layout_height="match_parent"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="12dp"
-        android:background="@android:color/white" />
-
     <FrameLayout
         android:id="@+id/layClose"
         android:layout_width="wrap_content"
         android:layout_height="match_parent">
+
+        <View
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="@android:color/white" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:layout_width="match_parent"

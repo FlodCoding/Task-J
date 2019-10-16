@@ -27,6 +27,30 @@ class TaskDetailPageState extends State<TaskDetailPage> {
     }
   }
 
+  void selectApp() async {
+    AppInfoBean appInfo = await CallNative.selectApp();
+    if (appInfo != null) {
+      setState(() {
+        if (_taskItemBean.appInfoBean != null &&
+            !_taskItemBean.appInfoBean.launchPackage.endsWith(appInfo.launchPackage)) {
+          //更换了App，重置手势
+          _taskItemBean.gesture = null;
+        }
+
+        _taskItemBean.appInfoBean = appInfo;
+      });
+    }
+  }
+
+  void addGesture() async {
+    Gesture gesture = await CallNative.addGesture(_taskItemBean.appInfoBean);
+    if (gesture != null) {
+      setState(() {
+        _taskItemBean.gesture = gesture;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final _timeBean = _taskItemBean.timeBean;
@@ -125,59 +149,50 @@ class TaskDetailPageState extends State<TaskDetailPage> {
             Padding(
                 padding: EdgeInsets.only(left: 20, right: 20),
                 child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    //app图标
-                    Container(
-                      child: _appInfoBean == null
-                          ? null
-                          : Image.memory(
-                              _appInfoBean.appIconBytes,
-                              width: 40,
-                              height: 40,
+                    FlatButton(
+                        onPressed: () {
+                          selectApp();
+                        },
+                        child: Row(
+                          children: <Widget>[
+                            //app图标
+                            Container(
+                              child: _appInfoBean == null
+                                  ? null
+                                  : Image.memory(
+                                      _appInfoBean.appIconBytes,
+                                      width: 40,
+                                      height: 40,
+                                    ),
                             ),
-                    ),
-
-                    //appName
-                    Expanded(
-                        child: Text(
-                      _appInfoBean == null ? "添加应用" : "  ${_appInfoBean.appName}",
-                      style: TextStyle(fontSize: 20),
-                    )),
+                            Text(
+                              _appInfoBean == null ? "添加应用" : "  ${_appInfoBean.appName}",
+                              style: TextStyle(fontSize: 20, color: Colors.black),
+                            )
+                          ],
+                        )),
                     FloatingActionButton(
                       elevation: 0,
                       onPressed: () async {
-                        AppInfoBean appInfo = await CallNative.selectApp();
-                        if (appInfo != null) {
-                          setState(() {
-                            _taskItemBean.appInfoBean = appInfo;
-                          });
+                        //去选择App
+                        if (_taskItemBean.appInfoBean == null) {
+                          selectApp();
+                        } else {
+                          //去录制手势
+                          addGesture();
                         }
                       },
                       heroTag: "fab2",
-                      child: Icon(Icons.add),
+                      child: Icon(_taskItemBean.appInfoBean == null
+                          ? Icons.add
+                          : (_taskItemBean.gesture == null ? Icons.video_call : Icons.videocam)),
                       backgroundColor: Color.fromARGB(0xFF, 114, 132, 156),
                       mini: true,
                     )
                   ],
                 )),
-
-            Padding(
-              padding: EdgeInsets.only(left: 20),
-              child: FlatButton(
-                child: Text(
-                  _taskItemBean.gesture == null ? "录制触摸" : "已录制触摸",
-                  style: TextStyle(fontSize: 20),
-                ),
-                onPressed: () async {
-                  Gesture gesture = await CallNative.addGesture();
-                  if (gesture != null) {
-                    setState(() {
-                      _taskItemBean.gesture = gesture;
-                    });
-                  }
-                },
-              ),
-            )
           ],
         ),
       ),

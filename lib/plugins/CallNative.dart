@@ -28,8 +28,10 @@ class CallNative {
     return null;
   }
 
-  static Future<Gesture> addGesture() async {
-    Map result = await _platform.invokeMethod('addGesture');
+  static Future<Gesture> addGesture(AppInfoBean appInfoBean) async {
+    if (appInfoBean == null) return null;
+
+    Map result = await _platform.invokeMethod('addGesture', appInfoBean.toLaunchInfoJson());
     if (result != null) {
       return Gesture.fromJson(Map<String, dynamic>.from(result));
     }
