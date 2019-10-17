@@ -102,8 +102,8 @@ object CalendarUtil {
         contentValues.put(CalendarContract.Reminders.EVENT_ID, eventId)
         contentValues.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT)
         //MINUTES = 0 或不添加无通知提醒
-        //contentValues.put(CalendarContract.Reminders.MINUTES, CalendarContract.Reminders.MINUTES_DEFAULT)
         contentValues.put(CalendarContract.Reminders.MINUTES, CalendarContract.Reminders.MINUTES_DEFAULT)
+        //contentValues.put(CalendarContract.Reminders.MINUTES, 1)
 
         return contentValues
     }

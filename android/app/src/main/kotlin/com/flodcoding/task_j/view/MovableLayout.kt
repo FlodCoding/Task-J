@@ -9,7 +9,6 @@ import android.view.Gravity
 import android.view.MotionEvent
 import android.view.WindowManager
 import android.widget.LinearLayout
-import kotlin.math.abs
 
 /**
  * SimpleDes:
@@ -20,7 +19,7 @@ import kotlin.math.abs
  */
 @SuppressLint("InflateParams")
 class MovableLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
-    LinearLayout(context, attrs, defStyleAttr) {
+        LinearLayout(context, attrs, defStyleAttr) {
 
     val windowLayoutParams: WindowManager.LayoutParams = WindowManager.LayoutParams()
 
@@ -34,6 +33,7 @@ class MovableLayout @JvmOverloads constructor(context: Context, attrs: Attribute
         windowLayoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT
         windowLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT
         windowLayoutParams.gravity = Gravity.END
+        windowLayoutParams.y = 500
         windowLayoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
     }
 
@@ -41,6 +41,7 @@ class MovableLayout @JvmOverloads constructor(context: Context, attrs: Attribute
     private var tempX: Float = 0f
     private var tempY: Float = 0f
     private var isAfterMoved = false
+
     override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
         when (event?.action) {
             MotionEvent.ACTION_DOWN -> {
@@ -51,16 +52,18 @@ class MovableLayout @JvmOverloads constructor(context: Context, attrs: Attribute
             MotionEvent.ACTION_MOVE -> {
                 val nowX = event.rawX
                 val nowY = event.rawY
-                val movedX = nowX - tempX
+                //Gravity End
+                val movedX = -(nowX - tempX)
                 val movedY = nowY - tempY
 
-                Gravity.END
                 tempX = nowX
                 tempY = nowY
-                windowLayoutParams.x = abs(windowLayoutParams.x + movedX).toInt()
-                windowLayoutParams.y = (windowLayoutParams.y + movedY).toInt()
+
+                windowLayoutParams.x = windowLayoutParams.x + movedX.toInt()
+                windowLayoutParams.y = windowLayoutParams.y + movedY.toInt()
+
                 val windowManager =
-                    context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
                 windowManager.updateViewLayout(this, windowLayoutParams)
                 isAfterMoved = true
             }
@@ -73,5 +76,19 @@ class MovableLayout @JvmOverloads constructor(context: Context, attrs: Attribute
         }
         return super.onInterceptTouchEvent(event)
     }
+
+
+    /*@SuppressLint("RtlHardcoded")
+    private fun isHorizontalEnd(): Boolean {
+        val absoluteGravity = Gravity.getAbsoluteGravity(windowLayoutParams.gravity, layoutDirection)
+        return (absoluteGravity and Gravity.HORIZONTAL_GRAVITY_MASK) == Gravity.RIGHT
+
+    }
+
+    private fun isVerticalBottom(): Boolean {
+        val absoluteGravity = Gravity.getAbsoluteGravity(windowLayoutParams.gravity, layoutDirection)
+        return (absoluteGravity and Gravity.VERTICAL_GRAVITY_MASK) == Gravity.BOTTOM
+
+    }*/
 
 }

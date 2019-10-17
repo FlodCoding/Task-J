@@ -108,7 +108,7 @@ object FlutterMethodChannel {
                         //返回给UI端
                         result.success(task.getIdMap())
                     }
-                    call.method == "updateEvent" -> {
+                    call.method == "updateTask" -> {
                         val task = JsonUtil.mapToObj(call.arguments as Map<*, *>, Task::class.java)
                                 ?: return@runBlocking
 

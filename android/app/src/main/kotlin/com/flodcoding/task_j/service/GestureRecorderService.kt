@@ -49,7 +49,6 @@ class GestureRecorderService : Service() {
                 //TODO 是否有可能不断 enable GestureCatchView
                 Log.d("GestureAccessibility", "onGestureFinish")
                 isAfterGesture = true
-                gestureInfo.delayTime = 0
                 //由於 updateViewLayout會有延遲，所以添加一個監聽器，一旦更新完狀態就分發手勢給AccessibilityService
                 gestureCatchView.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
                     override fun onLayoutChange(v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
