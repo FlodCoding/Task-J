@@ -6,6 +6,7 @@ import androidx.room.*
 import com.flodcoding.task_j.data.GestureBundle
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import java.io.Serializable
 
 
 /**
@@ -81,7 +82,7 @@ data class Time(
 }
 
 @Entity
-data class Gesture(var gestureBundleBytes: ByteArray) {
+data class Gesture(var gestureBundleBytes: ByteArray) : Serializable {
     fun toMap(): Map<String, Any> {
         return mapOf(
                 "gestureBundleBytes" to gestureBundleBytes

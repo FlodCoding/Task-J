@@ -91,9 +91,9 @@ object AppUtil {
     }
 
 
-    fun moveActivtyToFront(context: Activity) {
-        val activityManager = context.getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        activityManager.moveTaskToFront(context.taskId, 0)
+    fun moveThisActivtyToFront(activity: Activity) {
+        val activityManager = activity.getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        activityManager.moveTaskToFront(activity.taskId, 0)
     }
 
 

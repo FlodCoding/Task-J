@@ -128,8 +128,8 @@ class GestureRecorderService : Service() {
             recordBtn.layRecord.callOnClick()
         }
 
-        fun setOnGestureRecordedListener(listener: GestureRecorderWatcher.Listener?) {
-            mOnGestureRecordListener = listener
+        fun setOnGestureRecordedListener(recorderListener: GestureWatcher.Recorder?) {
+            mOnGestureRecordRecorderListener = recorderListener
         }
 
         fun onResult(isCancel: Boolean) {
@@ -140,7 +140,7 @@ class GestureRecorderService : Service() {
 
 
 
-    private var mOnGestureRecordListener: GestureRecorderWatcher.Listener? = null
+    private var mOnGestureRecordRecorderListener: GestureWatcher.Recorder? = null
 
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -151,23 +151,23 @@ class GestureRecorderService : Service() {
 
 
     private fun dispatchGesture(gestureInfo: GestureInfo) {
-        mOnGestureRecordListener?.onRecording(gestureInfo)
+        mOnGestureRecordRecorderListener?.onRecording(gestureInfo)
     }
 
     private fun startRecord() {
         enableGestureCatchView(true)
         gestureView.startRecord()
-        mOnGestureRecordListener?.onStartRecord()
+        mOnGestureRecordRecorderListener?.onStartRecord()
     }
 
     private fun stopRecord() {
         enableGestureCatchView(false)
         val result = gestureView.stopRecord()
-        mOnGestureRecordListener?.onStopRecord(result)
+        mOnGestureRecordRecorderListener?.onStopRecord(result)
     }
 
     private fun cancelRecord() {
-        mOnGestureRecordListener?.onCancelRecord()
+        mOnGestureRecordRecorderListener?.onCancelRecord()
     }
 
     override fun onUnbind(intent: Intent?): Boolean {

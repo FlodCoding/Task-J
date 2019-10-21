@@ -21,7 +21,7 @@ import com.flod.view.GestureInfo
  * UseDes:
  *
  */
-class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.Listener {
+class GestureAccessibility : AccessibilityService(), GestureWatcher.Recorder {
 
     private var mMode: Int = 0
 
@@ -32,12 +32,12 @@ class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.List
         private const val MODE_GESTURE_RECORD_AUTO = 3    //启动后立刻开始录制
 
 
-        private var mGestureRecorderWatcher: GestureRecorderWatcher.Listener? = null
+        private var mWatcher: GestureWatcher.Accessibility? = null
 
         //由于onBind 在AccessibilityService中被设置为final，无法使用bindService与外界通信
         //目前就先使用静态接口，通过接口将数据回调出去，不太好的做法，后面是否考虑别的方式
-        fun setGestureRecorderWatcher(watcher: GestureRecorderWatcher.Listener?) {
-            mGestureRecorderWatcher = watcher
+        fun setGestureRecorderWatcher(watcher: GestureWatcher.Accessibility?) {
+            mWatcher = watcher
         }
 
         fun startGestures(context: Context, gestures: ArrayList<GestureInfo>) {
@@ -61,7 +61,7 @@ class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.List
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
-        mGestureRecorderWatcher = null
+        mWatcher = null
         return super.onUnbind(intent)
     }
 
@@ -176,16 +176,16 @@ class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.List
     }
 
 
-    //==========================Listener==================================//
+    //==========================Recorder==================================//
 
 
     override fun onStartRecord() {
-        mGestureRecorderWatcher?.onStartRecord()
+        mWatcher?.onStartRecord(this)
     }
 
 
     override fun onRecording(gestureInfo: GestureInfo) {
-        mGestureRecorderWatcher?.onRecording(gestureInfo)
+        mWatcher?.onRecording(this, gestureInfo)
         startGesture(gestureInfo, object : GestureResultCallback() {
             override fun onCancelled(gestureDescription: GestureDescription?) {
                 mRecordServiceBinder?.onResult(true)
@@ -199,12 +199,12 @@ class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.List
     }
 
     override fun onStopRecord(gestureInfoList: ArrayList<GestureInfo>) {
-        mGestureRecorderWatcher?.onStopRecord(gestureInfoList)
+        mWatcher?.onStopRecord(this, gestureInfoList)
         unbindService(mServiceConnection)
     }
 
     override fun onCancelRecord() {
-        mGestureRecorderWatcher?.onCancelRecord()
+        mWatcher?.onCancelRecord(this)
         unbindService(mServiceConnection)
     }
 
@@ -218,8 +218,6 @@ class GestureAccessibility : AccessibilityService(), GestureRecorderWatcher.List
 
 
     override fun onAccessibilityEvent(event: AccessibilityEvent) {
-
-
     }
 
 
